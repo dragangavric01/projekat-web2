@@ -1,0 +1,18 @@
+
+.on {
+    color:goldenrod;
+  }
+  
+.off {
+    color: grey;
+}
+  
+.star-rating button {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  
+.star {
+    font-size: 2rem;
+}

@@ -1,0 +1,42 @@
+.myrides {
+    display: flex;
+    justify-content: center; 
+    margin-top: 8%;
+    height: 100vh;    
+}
+
+.myrides-center {
+    width: 50%;
+    height: 50%;
+    display: flex;
+    flex-direction: column;  
+    align-items: center;    
+}
+
+.myrides table {
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 25px;   
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.myrides th, td {
+    border: 1px solid #dddddd;
+    text-align: center;
+    padding: 8px;
+
+}
+
+.myrides th {
+    background-color: #e8e8e8;
+    width: 900px;
+}
+
+.myrides tr {
+    background-color: #f9f9f9;
+}
+
+.myrides tr:hover {
+    background-color: #f1f1f1;
+}

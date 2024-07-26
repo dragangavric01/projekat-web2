@@ -1,4 +1,21 @@
-a {
-    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: larger;
+
+.hyperlink-small {
+    color:  darkblue;
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.hyperlink-medium {
+    color:  darkblue;
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.hyperlink-large {
+    color:  darkblue;
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 40px;
 }
