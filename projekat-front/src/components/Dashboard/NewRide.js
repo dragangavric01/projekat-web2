@@ -4,7 +4,7 @@ import Header from '../elements/Header/Header';
 import Input, {InputType} from '../elements/Input/Input.js'
 import Button, {ButtonSize} from '../elements/Button/Button.js';
 import Text from '../elements/Text/Text.js';
-import StarRating from '../elements/StarRating/StarRating.js'
+import {Rate} from '../elements/StarRating/StarRating.js'
 import {useLocation } from 'react-router-dom';
 
 
@@ -36,7 +36,7 @@ export default function NewRide() {
     );
 }
 
-export function CurrentRide() {
+export function CurrentRideClient() {
     return (
         <div>
             <ClientNavigation/>
@@ -57,7 +57,7 @@ function RateDriver() {
             <div class="newride-center">
                 <Header number={1} text="Rate the driver:"/>
                 <br/>
-                <StarRating/>
+                <Rate/>
                 <Button text="Send rating" size={ButtonSize.MEDIUM}/>
                 <Button text="Skip" size={ButtonSize.MEDIUM}/>
             </div>
@@ -71,7 +71,7 @@ function EnterNewRide() {
         <div>
             <Input name={"Start address"} type={InputType.TEXT}/>
             <Input name={"Destination address"} type={InputType.TEXT}/>
-            <Button text={"Order a taxi"} navigateTo={"/dashboard/new-ride"} state={true} size={ButtonSize.MEDIUM}/>
+            <Button text={"Order a taxi"} navigateTo={"/client-dashboard/new-ride"} state={true} size={ButtonSize.MEDIUM}/>
         </div>
     );
 }
@@ -86,8 +86,8 @@ function ConfirmNewRide() {
             <Text content={"Estimated wating time:"}/>
             <Text content={"3 min"}/>
             <br/>
-            <Button text={"Confirm"}  navigateTo={"/dashboard/current-ride"}  size={ButtonSize.SMALL}/>
-            <Button text={"Cancel"} navigateTo={"/dashboard/new-ride"} size={ButtonSize.SMALL}/>
+            <Button text={"Confirm"}  navigateTo={"/client-dashboard/current-ride"}  size={ButtonSize.SMALL}/>
+            <Button text={"Cancel"} navigateTo={"/client-dashboard/new-ride"} size={ButtonSize.SMALL}/>
         </div>
     );
 }

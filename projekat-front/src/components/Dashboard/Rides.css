@@ -1,20 +1,20 @@
-.myrides {
+.rides {
     display: flex;
     justify-content: center; 
     margin-top: 5%;
     height: 100vh;    
 }
 
-.myrides-center {
+.rides-center {
     width: auto;
-    min-width: 60%;
+    min-width: 80%;
     height: 50%;
     display: flex;
     flex-direction: column;  
     align-items: center;    
 }
 
-.myrides table {
+.rides table {
     font-family: Arial;
     font-weight: 500;
     font-size: 25px;   
@@ -22,21 +22,21 @@
     border-collapse: collapse;
 }
 
-.myrides th, td {
+.rides th, td {
     border: 1px solid #dddddd;
     text-align: center;
     padding: 8px;
 
 }
 
-.myrides th {
+.rides th {
     background-color: #e8e8e8;
 }
 
-.myrides tr {
+.rides tr {
     background-color: #f9f9f9;
 }
 
-.myrides tr:hover {
+.rides tr:hover {
     background-color: #f1f1f1;
 }

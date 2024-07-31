@@ -1,37 +1,24 @@
-import './MyRides.css';
-import {ClientNavigation, DriverNavigation} from './Dashboard';
+import './Rides.css';
+import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink';
+import { AdminNavigation } from './Dashboard';
 import Header from '../elements/Header/Header';
 
 
-export function MyRidesClient() {
+export default function Rides() {
     return (
         <div>
-            <ClientNavigation/>
-            <div class="myrides">
-                <div class="myrides-center">
-                    <Header number={1} text="My rides"/>
+            <AdminNavigation/>
+            <div class="rides">
+                <div class="rides-center">
+                    <Header number={1} text="Rides"/>
                     <br/>
-                    <MyRidesTable rides={rides}/>
+                    <RidesTable rides={rides}/>
                 </div>
             </div>
         </div>
     );
 }
 
-export function MyRidesDriver() {
-    return (
-        <div>
-            <DriverNavigation/>
-            <div class="myrides">
-                <div class="myrides-center">
-                    <Header number={1} text="My rides"/>
-                    <br/>
-                    <MyRidesTable rides={rides}/>
-                </div>
-            </div>
-        </div>
-    );
-}
 
 
 const rides = [
@@ -39,45 +26,60 @@ const rides = [
         startAddress: "Filipa Visnjica 21",
         destinationAddress: "Gavrila Principa 43",
         price: 5.33,
+        driver: "driver1",
+        client: "client1",
+        status: "finished",
         dateAndTime: "21.04.2024. 17:33"
     }, 
     {
         startAddress: "Filipa Visnjica 21",
         destinationAddress: "Gavrila Principa 43",
         price: 5.33,
+        driver: "driver1",
+        client: "client1",
+        status: "finished",
         dateAndTime: "21.04.2024. 17:33"
     }, 
     {
         startAddress: "Filipa Visnjica 21",
         destinationAddress: "Gavrila Principa 43",
         price: 5.33,
+        driver: "driver1",
+        client: "client1",
+        status: "finished",
         dateAndTime: "21.04.2024. 17:33"
     }, 
     {
         startAddress: "Filipa Visnjica 21",
         destinationAddress: "Gavrila Principa 43",
         price: 5.33,
+        driver: "driver1",
+        client: "client1",
+        status: "finished",
         dateAndTime: "21.04.2024. 17:33"
     }, 
     {
         startAddress: "Filipa Visnjica 21",
         destinationAddress: "Gavrila Principa 43",
         price: 5.33,
+        driver: "driver1",
+        client: "client1",
+        status: "finished",
         dateAndTime: "21.04.2024. 17:33"
     }
 ]
 
-function MyRidesTable({rides}) {
+function RidesTable({rides}) {
     const rows = [];
 
     rides.forEach((ride) => {
-        rows.push(<MyRidesTableRow startAddress={ride.startAddress} destinationAddress={ride.destinationAddress} price={ride.price}  dateAndTime={ride.dateAndTime}/>);
+        rows.push(<RidesTableRow startAddress={ride.startAddress} destinationAddress={ride.destinationAddress} price={ride.price} driver={ride.driver}  client={ride.client}  status={ride.status}  dateAndTime={ride.dateAndTime}/>);
     });
 
     return (
         <table>
             <thead>
-                <MyRidesTableHeader/>
+                <RidesTableHeader/>
             </thead>
             <tbody>
                 {rows}
@@ -86,23 +88,29 @@ function MyRidesTable({rides}) {
     );
 }
 
-function MyRidesTableHeader() {
+function RidesTableHeader() {
     return (
         <tr>
             <th>Start address</th>
             <th>Destination address</th>
             <th>Price</th>
+            <th>Driver</th>
+            <th>Client</th>
+            <th>Status</th>
             <th>Date and time</th>
         </tr>
     );
 }
 
-function MyRidesTableRow({startAddress, destinationAddress, price, dateAndTime}) {
+function RidesTableRow({startAddress, destinationAddress, price, driver, client, status, dateAndTime}) {
     return (
         <tr>
             <td>{startAddress}</td>
             <td>{destinationAddress}</td>
             <td>{price}</td>
+            <td>{driver}</td>
+            <td>{client}</td>
+            <td>{status}</td>
             <td>{dateAndTime}</td>
         </tr>
     );

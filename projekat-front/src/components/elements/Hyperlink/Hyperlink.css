@@ -17,5 +17,23 @@
     color:  darkblue;
     font-family: Arial;
     font-weight: 500;
-    font-size: 40px;
+    font-size: 60px;
+}
+
+.hyperlink-small-nocolor {
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.hyperlink-medium-nocolor {
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 30px;
+}
+
+.hyperlink-large-nocolor {
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 60px;
 }

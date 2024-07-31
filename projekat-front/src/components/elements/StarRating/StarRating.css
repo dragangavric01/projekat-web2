@@ -7,11 +7,16 @@
     color: grey;
 }
   
-.star-rating button {
+.rate button {
     background: none;
     border: none;
     cursor: pointer;
-  }
+}
+
+.show-rating button {
+    background: none;
+    border: none;
+}
   
 .star {
     font-size: 2rem;
