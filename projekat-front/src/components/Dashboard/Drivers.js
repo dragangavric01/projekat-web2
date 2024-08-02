@@ -5,6 +5,7 @@ import { AdminNavigation } from './Dashboard';
 import Text from '../elements/Text/Text';
 import './Drivers.css';
 import Button from '../elements/Button/Button';
+import { useParams } from 'react-router-dom';
 
 
 export default function Drivers() {
@@ -23,12 +24,22 @@ export default function Drivers() {
 }
 
 export function Driver() {
+    const {driverUsername} = useParams();
+
+    var thisDriver;
+    for (var driver of drivers) {
+        if (driver.username == driverUsername) {
+            thisDriver = driver;
+            break;
+        }
+    }
+
     return (
         <div>
             <AdminNavigation/>
             <div class="driver">
                 <div class="driver-center">
-                    <DriverData/>
+                    <DriverData driver={thisDriver}/>
                     
                     <br/>
 
@@ -43,36 +54,72 @@ export function Driver() {
 const drivers = [
     {
         username: "driver1",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: false,
         averageRating: 4
     }, 
     {
-        username: "driver1",
+        username: "driver2",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: true,
         averageRating: 4
     }, 
     {
-        username: "driver1",
+        username: "driver3",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: false,
         averageRating: 1
     }, 
     {
-        username: "driver1",
+        username: "driver4",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: true,
         averageRating: 4
     }, 
     {
-        username: "driver1",
+        username: "driver5",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: false,
         averageRating: 2
     }, 
     {
-        username: "driver1",
+        username: "driver6",
+        email: "asdasdsada",
+        password: "asdasdsada",
+        firstName: "asdasdsada",
+        lastName: "asdasdsada",
+        dateofBirth: "asdasdsada",
+        address: "asdasdsada",
         registrationRequestStatus: "Pending",
         isBlocked: true,
         averageRating: 4
@@ -111,7 +158,7 @@ function DriverTableHeader() {
 function DriverTableRow({username, registrationRequestStatus, isBlocked, averageRating}) {
     return (
         <tr>
-            <td><Hyperlink text={username} textColor={isBlocked ? "darkred" : "black"} path={"/admin-dashboard/driver"}/></td>
+            <td><Hyperlink text={username} textColor={isBlocked ? "darkred" : "black"} path={"/admin-dashboard/" + username}/></td>
             <td>{registrationRequestStatus}</td>
             <td><ShowRating rating={averageRating}/></td>
         </tr>
@@ -120,19 +167,16 @@ function DriverTableRow({username, registrationRequestStatus, isBlocked, average
 
 
 
-function DriverData() {
-    var registrationRequestStatus = "Pending";
-    var blockStatus = "Not blocked";
-    
+function DriverData({driver}) {
     var registrationRequestStatusButtons;
-    if (registrationRequestStatus == "Pending") {
+    if (driver.registrationRequestStatus == "Pending") {
         registrationRequestStatusButtons = <><Button text={"Accept"}/><Button text={"Decline"}/></>
     } else {
         registrationRequestStatusButtons = null;
     }
 
     var blockStatusButtons;
-    if (registrationRequestStatus == "Blocked") {
+    if (driver.isBlocked) {
         blockStatusButtons = <Button text={"Unblock"}/>
     } else {
         blockStatusButtons = <Button text={"Block"}/>
@@ -140,34 +184,35 @@ function DriverData() {
 
     return (
         <div>
-            <DriverField name={"Email:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Email:"} value={driver.email}/>
             <br/>
-            <DriverField name={"Username:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Username:"} value={driver.username}/>
             <br/>
-            <DriverField name={"Password:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Password:"} value={driver.password}/>
             <br/>
-            <DriverField name={"First name:"} value="asdfqwerzxcv"/>
+            <DriverField name={"First name:"} value={driver.firstName}/>
             <br/>
-            <DriverField name={"Last name:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Last name:"} value={driver.lastName}/>
             <br/>
-            <DriverField name={"Date of birth:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Date of birth:"} value={driver.dateofBirth}/>
             <br/>
-            <DriverField name={"Address:"} value="asdfqwerzxcv"/>
+            <DriverField name={"Address:"} value={driver.address}/>
             
             <br/>
             <br/>
 
-            <ShowRating rating={3}/>
+            <Text content={"Average rating:"}/>
+            <ShowRating rating={driver.averageRating}/>
 
             <br/>
             <br/>
 
-            <DriverField name={"Registration request status:"} value={registrationRequestStatus}/>
+            <DriverField name={"Registration request status:"} value={driver.registrationRequestStatus}/>
             {registrationRequestStatusButtons}
 
             <br/>
 
-            <DriverField name={"Block status:"} value={blockStatus}/>
+            <DriverField name={"Block status:"} value={driver.isBlocked ? "Blocked" : "Not blocked"}/>
             {blockStatusButtons}
         </div>
     );

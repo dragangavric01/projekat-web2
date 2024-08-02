@@ -28,7 +28,7 @@ export default function App() {
                     <Route path='/driver-dashboard/new-rides' element={<NewRides/>}/>
                     <Route path='/admin-dashboard/rides' element={<Rides/>}/>
                     <Route path='/admin-dashboard/drivers' element={<Drivers/>}/>
-                    <Route path='/admin-dashboard/driver' element={<Driver/>}/>
+                    <Route path='/admin-dashboard/:driverUsername' element={<Driver/>}/>
                 </Routes>
             </BrowserRouter>
         </div>

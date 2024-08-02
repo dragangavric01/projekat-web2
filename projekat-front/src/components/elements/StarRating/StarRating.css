@@ -6,11 +6,19 @@
 .off {
     color: grey;
 }
+
+.rate {
+    display: inline;
+}
   
 .rate button {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+.show-rating {
+    display: inline;
 }
 
 .show-rating button {
