@@ -5,11 +5,13 @@ VisualStudioVersion = 17.9.34728.123
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "ProjekatBack", "ProjekatBack\ProjekatBack.sfproj", "{0931E30F-6C97-4589-B52C-7762EABFA5B0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebService", "WebService\WebService.csproj", "{699E9228-6434-4A40-80CE-772AE46060F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService", "WebService\WebService.csproj", "{699E9228-6434-4A40-80CE-772AE46060F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{EC5EDEEA-EFFA-4183-9A50-F56C6C2D4ED2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UserService", "UserService\UserService.csproj", "{EC5EDEEA-EFFA-4183-9A50-F56C6C2D4ED2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideService", "RideService\RideService.csproj", "{F73421FC-0A3F-4B2A-ACC8-8939817450D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RideService", "RideService\RideService.csproj", "{F73421FC-0A3F-4B2A-ACC8-8939817450D5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{2CBD2762-65C9-4C02-BC88-2FCC50309C71}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,14 @@ Global
 		{F73421FC-0A3F-4B2A-ACC8-8939817450D5}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F73421FC-0A3F-4B2A-ACC8-8939817450D5}.Release|x64.ActiveCfg = Release|Any CPU
 		{F73421FC-0A3F-4B2A-ACC8-8939817450D5}.Release|x64.Build.0 = Release|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Debug|x64.Build.0 = Debug|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Release|x64.ActiveCfg = Release|Any CPU
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

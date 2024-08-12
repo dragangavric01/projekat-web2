@@ -8,33 +8,33 @@ export const InputType = {
 };
 
 
-export default function Input({name, type, dropdownOptions}) {
+export default function Input({name, type, handleChangeFunction, dropdownOptions}) {
     if (type == InputType.TEXT) {
         return (
             <div class="input-field">
                 <InputName name={name}/>
-                <TextInput id={name}/>
+                <TextInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.PASSWORD) {
         return (
             <div class="input-field">
                 <InputName name={name}/>
-                <PasswordInput id={name}/>
+                <PasswordInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.DATE) {
         return (
             <div class="input-field">
                 <InputName name={name}/>
-                <DateInput id={name}/>
+                <DateInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.DROPDOWN) {
         return (
             <div class="input-field">
-                <InputName name={name}/>
-                <DropdownInput id={name} options={dropdownOptions}/>
+                <InputName name={name} />
+                <DropdownInput id={name} options={dropdownOptions} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     }
@@ -46,25 +46,25 @@ function InputName({name}) {
     );
 }
 
-function TextInput({id}) {
+function TextInput({id, handleChangeFunction}) {
     return (
-        <input id={id} type="text"/>
+        <input id={id} type="text" onChange={handleChangeFunction}/>
     );
 }
 
-function PasswordInput({id}) {
+function PasswordInput({id, handleChangeFunction}) {
     return (
-        <input id={id} type="password"/>
+        <input id={id} type="password" onChange={handleChangeFunction}/>
     );
 }
 
-function DateInput({id}) {
+function DateInput({id, handleChangeFunction}) {
     return (
-        <input id={id} type="date"/>
+        <input id={id} type="date" onChange={handleChangeFunction}/>
     );
 }
 
-function DropdownInput({id, options}) {
+function DropdownInput({id, options, handleChangeFunction}) {
     const selectOptions = options.map((option, index) => (
         <option key={index} value={option}>
             {option}
@@ -72,7 +72,7 @@ function DropdownInput({id, options}) {
     ));
 
     return (
-        <select id={id}>
+        <select id={id}  onChange={handleChangeFunction}>
             {selectOptions}
         </select>
     );

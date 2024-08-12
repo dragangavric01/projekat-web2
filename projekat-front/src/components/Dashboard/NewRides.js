@@ -1,6 +1,6 @@
 import './NewRides.css';
 import Header from '../elements/Header/Header';
-import {DriverNavigation} from './Dashboard';
+import Navigation from './Navigation';
 import Hyperlink from '../elements/Hyperlink/Hyperlink';
 import Text from '../elements/Text/Text';
 
@@ -8,27 +8,12 @@ import Text from '../elements/Text/Text';
 export function NewRides() {
     return (
         <div>
-            <DriverNavigation/>
+            <Navigation/>
             <div class="newrides">
                 <div class="newrides-center">
                     <Header number={1} text="New rides"/>
                     <br/>
                     <NewRidesTable rides={rides}/>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export function CurrentRideDriver() {
-    return (
-        <div>
-            <DriverNavigation/>
-            <div class="newrides">
-                <div class="newrides-center">
-                    <Header number={1} text="Current ride"/>
-                    <br/>
-                    <CurrentRideInfo/>
                 </div>
             </div>
         </div>
@@ -100,35 +85,7 @@ function NewRidesTableRow({startAddress, destinationAddress, price}) {
             <td>{startAddress}</td>
             <td>{destinationAddress}</td>
             <td>{price}</td>
-            <td><Hyperlink text={"Accept"} path={"/driver-dashboard/current-ride"}/></td>
+            <td><Hyperlink text={"Accept"} path={"/dashboard/current-ride"}/></td>
         </tr>
     );
-}
-
-function CurrentRideInfo() {
-    const rideStarted = false;
-
-    if (rideStarted) {
-        return (
-            <div>
-                <Text content={"Estimated ride duration:"}/>
-                <Text content={"15 min"}/>
-                <br/>
-                <br/>
-                <Text content={"Taxi at destination in:"}/>
-                <Text content={"14 min"}/>
-            </div>
-        );
-    } else {
-        return (
-            <div>
-                <Text content={"Estimated ride duration:"}/>
-                <Text content={"15 min"}/>
-                <br/>
-                <br/>
-                <Text content={"Taxi arriving in:"}/>
-                <Text content={"2 min"}/>
-            </div>
-        );
-    }
 }

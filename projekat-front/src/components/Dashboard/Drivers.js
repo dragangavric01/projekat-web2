@@ -1,17 +1,17 @@
 import Header from '../elements/Header/Header';
 import Hyperlink from '../elements/Hyperlink/Hyperlink';
 import {ShowRating} from '../elements/StarRating/StarRating';
-import { AdminNavigation } from './Dashboard';
+import Navigation from './Navigation';
 import Text from '../elements/Text/Text';
 import './Drivers.css';
-import Button from '../elements/Button/Button';
+import {NavigationButton} from '../elements/Button/Button';
 import { useParams } from 'react-router-dom';
 
 
 export default function Drivers() {
     return (
         <div>
-            <AdminNavigation/>
+            <Navigation/>
             <div class="drivers">
                 <div class="drivers-center">
                     <Header number={1} text="Drivers"/>
@@ -36,7 +36,7 @@ export function Driver() {
 
     return (
         <div>
-            <AdminNavigation/>
+            <Navigation/>
             <div class="driver">
                 <div class="driver-center">
                     <DriverData driver={thisDriver}/>
@@ -158,7 +158,7 @@ function DriverTableHeader() {
 function DriverTableRow({username, registrationRequestStatus, isBlocked, averageRating}) {
     return (
         <tr>
-            <td><Hyperlink text={username} textColor={isBlocked ? "darkred" : "black"} path={"/admin-dashboard/" + username}/></td>
+            <td><Hyperlink text={username} textColor={isBlocked ? "darkred" : "black"} path={"/dashboard/" + username}/></td>
             <td>{registrationRequestStatus}</td>
             <td><ShowRating rating={averageRating}/></td>
         </tr>
@@ -170,16 +170,16 @@ function DriverTableRow({username, registrationRequestStatus, isBlocked, average
 function DriverData({driver}) {
     var registrationRequestStatusButtons;
     if (driver.registrationRequestStatus == "Pending") {
-        registrationRequestStatusButtons = <><Button text={"Accept"}/><Button text={"Decline"}/></>
+        registrationRequestStatusButtons = <><NavigationButton text={"Accept"}/><NavigationButton text={"Decline"}/></>
     } else {
         registrationRequestStatusButtons = null;
     }
 
     var blockStatusButtons;
     if (driver.isBlocked) {
-        blockStatusButtons = <Button text={"Unblock"}/>
+        blockStatusButtons = <NavigationButton text={"Unblock"}/>
     } else {
-        blockStatusButtons = <Button text={"Block"}/>
+        blockStatusButtons = <NavigationButton text={"Block"}/>
     }
 
     return (

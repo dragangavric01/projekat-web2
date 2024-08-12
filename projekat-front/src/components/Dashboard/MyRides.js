@@ -1,27 +1,12 @@
 import './MyRides.css';
-import {ClientNavigation, DriverNavigation} from './Dashboard';
+import Navigation from './Navigation';
 import Header from '../elements/Header/Header';
 
 
-export function MyRidesClient() {
+export default function MyRides() {
     return (
         <div>
-            <ClientNavigation/>
-            <div class="myrides">
-                <div class="myrides-center">
-                    <Header number={1} text="My rides"/>
-                    <br/>
-                    <MyRidesTable rides={rides}/>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-export function MyRidesDriver() {
-    return (
-        <div>
-            <DriverNavigation/>
+            <Navigation/>
             <div class="myrides">
                 <div class="myrides-center">
                     <Header number={1} text="My rides"/>

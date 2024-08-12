@@ -1,6 +1,6 @@
 import './Register.css';
 import Input, {InputType} from '../elements/Input/Input.js';
-import Button from '../elements/Button/Button.js';
+import {NavigationButton} from '../elements/Button/Button.js';
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink.js';
 import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
@@ -30,7 +30,7 @@ export default function Register() {
                         <Input name="Address" type={InputType.TEXT}/>
                         <Input name="Profile picture" type={InputType.TEXT}/>
 
-                        <Button text="Register"/>
+                        <NavigationButton text="Register"/>
 
                         <br/>
                         <br/>

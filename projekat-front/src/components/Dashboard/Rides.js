@@ -1,13 +1,13 @@
 import './Rides.css';
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink';
-import { AdminNavigation } from './Dashboard';
+import Navigation from './Navigation';
 import Header from '../elements/Header/Header';
 
 
 export default function Rides() {
     return (
         <div>
-            <AdminNavigation/>
+            <Navigation/>
             <div class="rides">
                 <div class="rides-center">
                     <Header number={1} text="Rides"/>
