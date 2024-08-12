@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Fabric.Query;
 using System.Fabric;
 using System.Net.Http;
-using Common;
 using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using System.Threading.Tasks;
@@ -13,10 +12,12 @@ using Common.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Linq;
+using Common.RemotingInterfaces;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace WebService.Controllers {
+namespace WebService.Controllers
+{
     [Route("users")]
     [ApiController]
     public class UserController : ControllerBase {
@@ -30,7 +31,7 @@ namespace WebService.Controllers {
         [HttpPost("log-in")]
         public async Task<IActionResult> LogIn([FromBody] LogInDTO logInDTO) {
             try {
-                string token = userServiceProxy.LogIn(logInDTO);
+                string token = await userServiceProxy.LogIn(logInDTO);
                 return Ok(token);
             } catch {
                 return Problem();
@@ -45,6 +46,8 @@ namespace WebService.Controllers {
         [HttpPost("update")]
         public async Task<bool> Update() {
             string username = GetUsernameFromToken();
+
+            return false;
 
         }
 

@@ -1,31 +1,27 @@
-﻿using Common;
+﻿using Common.Model;
 using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace UserService {
-    public class UserState {
+namespace RideService {
+    public class CurrentRideClientStateHandler {
         IReliableStateManager stateManager;
 
-        public UserState(IReliableStateManager stateManager) {
+        public CurrentRideClientStateHandler(IReliableStateManager stateManager) {
             this.stateManager = stateManager;
         }
 
-        public async Task Create(string username, UserRole role) {
-            IReliableDictionary<string, UserRole> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, UserRole>>("users");
+        public async Task Create(string username, CurrentRideClientState currentRideClientState) {
+            IReliableDictionary<string, CurrentRideClientState> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, CurrentRideClientState>>("currentrides");
 
             try {
                 using (ITransaction tx = this.stateManager.CreateTransaction()) {
                     // AddAsync takes key's write lock; if >4 secs, TimeoutException
-                    await dict.AddAsync(tx, username, role);
+                    await dict.AddAsync(tx, username, currentRideClientState);
 
                     // After quorum responds, all locks released
                     await tx.CommitAsync();
@@ -33,16 +29,16 @@ namespace UserService {
             } catch (TimeoutException) {
                 // retry after delay because you couldn't get a lock on the file because it already in use. 
                 await Task.Delay(100);
-                await Create(username, role);
+                await Create(username, currentRideClientState);
             }
         }
 
-        public async Task<UserRole?> Read(string username) {
-            IReliableDictionary<string, UserRole> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, UserRole>>("users");
+        public async Task<CurrentRideClientState> Read(string username) {
+            IReliableDictionary<string, CurrentRideClientState> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, CurrentRideClientState>>("currentrides");
 
             try {
                 using (ITransaction tx = this.stateManager.CreateTransaction()) {
-                    ConditionalValue<UserRole> result = await dict.TryGetValueAsync(tx, username);
+                    ConditionalValue<CurrentRideClientState> result = await dict.TryGetValueAsync(tx, username);
 
                     if (result.HasValue) {
                         return result.Value;
@@ -57,7 +53,7 @@ namespace UserService {
         }
 
         public async Task Delete(string username) {
-            IReliableDictionary<string, UserRole> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, UserRole>>("users");
+            IReliableDictionary<string, CurrentRideClientState> dict = await stateManager.GetOrAddAsync<IReliableDictionary<string, CurrentRideClientState>>("currentrides");
 
             try {
                 using (ITransaction tx = this.stateManager.CreateTransaction()) {
@@ -71,5 +67,13 @@ namespace UserService {
                 await Delete(username);
             }
         }
+    }
+
+    public class CurrentRideClientState {
+        public string RideId  {get; set; }
+        public string StartAddress { get; set; }
+        public string DestinationAddress { get; set; }
+        public float Price { get; set; }
+        public int WaitTimeInMinutes { get; set; }
     }
 }

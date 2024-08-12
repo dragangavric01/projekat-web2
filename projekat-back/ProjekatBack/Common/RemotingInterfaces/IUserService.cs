@@ -8,11 +8,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common {
-    public interface IUserService : IService {
-        FrontStateDTO Register(User user);
-        string LogIn(LogInDTO logInDTO);
-        void LogOut();
-        bool Update();
+namespace Common.RemotingInterfaces
+{
+    public interface IUserService : IService
+    {
+        Task<FrontStateDTO> Register(User user);
+        Task<string> LogIn(LogInDTO logInDTO);
+        Task LogOut();
+        Task<bool> Update();
     }
 }

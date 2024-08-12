@@ -30,7 +30,7 @@ namespace WebService {
             {
                 options.AddPolicy("AllowAccess",
                     builder => {
-                        builder.WithOrigins("http://localhost:3000") 
+                        builder.WithOrigins(Configuration["ReactAppURL"]) 
                                .AllowAnyMethod()
                                .AllowAnyHeader();
                     });
@@ -52,7 +52,7 @@ namespace WebService {
                     ValidateAudience = false, 
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true, 
-                    ValidIssuer = "http://localhost:8623", 
+                    ValidIssuer = Configuration["TokenIssuerURL"], 
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["SecretKey"]))
                 };
             }); 
