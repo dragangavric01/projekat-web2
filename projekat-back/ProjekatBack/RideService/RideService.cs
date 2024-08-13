@@ -8,7 +8,7 @@ using Microsoft.ServiceFabric.Data.Collections;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-using Common.RemotingInterfaces;
+using WebRideCommon;
 
 namespace RideService {
     /// <summary>

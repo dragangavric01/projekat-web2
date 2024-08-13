@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.RemotingInterfaces {
+namespace WebRideCommon {
     public interface IRideService : IService {
         Task F();
     }

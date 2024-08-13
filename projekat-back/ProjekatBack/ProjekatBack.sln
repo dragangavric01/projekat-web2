@@ -6,15 +6,29 @@ MinimumVisualStudioVersion = 10.0.40219.1
 Project("{A07B5EB6-E848-4116-A8D0-A826331D98C6}") = "ProjekatBack", "ProjekatBack\ProjekatBack.sfproj", "{0931E30F-6C97-4589-B52C-7762EABFA5B0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebService", "WebService\WebService.csproj", "{699E9228-6434-4A40-80CE-772AE46060F6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E} = {D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}
+		{ED9BD083-436E-4E99-8004-CA221CC081E1} = {ED9BD083-436E-4E99-8004-CA221CC081E1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{2CBD2762-65C9-4C02-BC88-2FCC50309C71}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserService", "UserService\UserService.csproj", "{BA590F93-D0C8-494A-8EBD-33C6C5CEE785}"
 	ProjectSection(ProjectDependencies) = postProject
 		{2CBD2762-65C9-4C02-BC88-2FCC50309C71} = {2CBD2762-65C9-4C02-BC88-2FCC50309C71}
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E} = {D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RideService", "RideService\RideService.csproj", "{183A3453-197F-43D1-80C9-13666542410D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{ED9BD083-436E-4E99-8004-CA221CC081E1} = {ED9BD083-436E-4E99-8004-CA221CC081E1}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebRideCommon", "WebRideCommon\WebRideCommon.csproj", "{ED9BD083-436E-4E99-8004-CA221CC081E1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CommonLibraries", "CommonLibraries", "{3F0D268B-38B4-436B-9C0B-73B0C4B110BC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebUserCommon", "WebUserCommon\WebUserCommon.csproj", "{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,9 +82,30 @@ Global
 		{183A3453-197F-43D1-80C9-13666542410D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{183A3453-197F-43D1-80C9-13666542410D}.Release|x64.ActiveCfg = Release|Any CPU
 		{183A3453-197F-43D1-80C9-13666542410D}.Release|x64.Build.0 = Release|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Debug|x64.Build.0 = Debug|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Release|x64.ActiveCfg = Release|Any CPU
+		{ED9BD083-436E-4E99-8004-CA221CC081E1}.Release|x64.Build.0 = Release|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Debug|x64.Build.0 = Debug|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Release|x64.ActiveCfg = Release|Any CPU
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2CBD2762-65C9-4C02-BC88-2FCC50309C71} = {3F0D268B-38B4-436B-9C0B-73B0C4B110BC}
+		{ED9BD083-436E-4E99-8004-CA221CC081E1} = {3F0D268B-38B4-436B-9C0B-73B0C4B110BC}
+		{D2211E52-40CB-47E0-A8D6-8AC7D7DB464E} = {3F0D268B-38B4-436B-9C0B-73B0C4B110BC}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {D3187E7E-42AD-458D-AB84-1FBBD2CC07BC}

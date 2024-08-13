@@ -12,7 +12,7 @@ const ax = axios.create({
 
 export const logIn = async (logInData) => {
     try {
-        const response = await ax.post('/users/log-in', logInData);
+        const response = await ax.post('/current-user/log-in', logInData);
         return response.data;
     } catch (error) {
         console.error('Error: ', error);
@@ -22,7 +22,7 @@ export const logIn = async (logInData) => {
 
 export const register = async (user) => {
     try {
-        const response = await ax.post('/users/register', user);
+        const response = await ax.post('/current-user/register', user);
         return response.data;
     } catch (error) {
         console.error('Error: ', error);

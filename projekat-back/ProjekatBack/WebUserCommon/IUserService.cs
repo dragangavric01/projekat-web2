@@ -1,18 +1,15 @@
-﻿using Common.DTO;
-using Common.Model;
-using Microsoft.ServiceFabric.Services.Remoting;
+﻿using Microsoft.ServiceFabric.Services.Remoting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using WebUserCommon.DTO;
 
-namespace Common.RemotingInterfaces
-{
-    public interface IUserService : IService
-    {
-        Task<FrontStateDTO> Register(User user);
+namespace WebUserCommon {
+    public interface IUserService : IService {
+        Task<string> Register();
         Task<string> LogIn(LogInDTO logInDTO);
         Task LogOut();
         Task<bool> Update();

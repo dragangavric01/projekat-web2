@@ -7,11 +7,12 @@ using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
-using Common.DTO;
 using Common.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Common.RemotingInterfaces;
+using WebUserCommon;
+using WebUserCommon.DTO;
+using UserService.Storage;
 
 namespace UserService
 {
@@ -21,6 +22,7 @@ namespace UserService
     internal sealed class UserService : StatelessService, IUserService {
         string secretKey;
         string tokenIssuerURL;
+        UserStorageManager userStorageManager = new UserStorageManager();
 
         public UserService(StatelessServiceContext context) : base(context) {
             IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
@@ -30,7 +32,7 @@ namespace UserService
         }
 
 
-        public async Task<FrontStateDTO> Register(User user) {
+        public async Task<string> Register() {
             return null;
 
             /*
