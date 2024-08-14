@@ -8,8 +8,8 @@ export default function Rides() {
     return (
         <div>
             <Navigation/>
-            <div class="rides">
-                <div class="rides-center">
+            <div className="rides">
+                <div className="rides-center">
                     <Header number={1} text="Rides"/>
                     <br/>
                     <RidesTable rides={rides}/>

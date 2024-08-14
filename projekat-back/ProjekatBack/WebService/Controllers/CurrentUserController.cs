@@ -26,7 +26,7 @@ namespace WebService.Controllers
         [HttpPost("register")]
        public async Task<ActionResult> Register() {
             return null;
-        }
+       }
 
         [HttpPost("log-in")]
         public async Task<ActionResult> LogIn([FromBody] LogInDTO logInDTO) {
@@ -39,11 +39,13 @@ namespace WebService.Controllers
         }
 
         [HttpGet("log-out")]
+        [Authorize]
         public async Task LogOut() {
             
         }
 
         [HttpPost("update")]
+        [Authorize]
         public async Task<ActionResult> Update() {
             string username = GetUsernameFromToken();
 

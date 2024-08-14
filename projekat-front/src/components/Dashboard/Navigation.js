@@ -2,7 +2,7 @@ import './Navigation.css';
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink.js';
 import Banner from '../Banner/Banner.js';
 import {UserRole} from '../../model/User.js';
-import { getRole } from '../../services/stateService.js';
+import { getRole } from '../../services/globalStateService.js';
 
 
 export default function Navigation() {
@@ -22,7 +22,7 @@ function ClientNavigation() {
     return (
         <div>
             <Banner/>
-            <div class="navbar">
+            <div className="navbar">
                 <ul>
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
@@ -38,7 +38,7 @@ function DriverNavigation() {
     return (
         <div>
             <Banner/>
-            <div class="navbar">
+            <div className="navbar">
                 <ul>
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
@@ -54,7 +54,7 @@ function AdminNavigation() {
     return (
         <div>
             <Banner/>
-            <div class="navbar">
+            <div className="navbar">
                 <ul>
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/rides" text="Rides" size={HyperlinkSize.MEDIUM}/></li>

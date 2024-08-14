@@ -6,8 +6,8 @@ export default function Dashboard() {
     return (
         <div>
             <Navigation/>
-            <div class="dashboard">
-                <div class="dashboard-center">
+            <div className="dashboard">
+                <div className="dashboard-center">
                     <Header number={1} text={"Welcome to uTaxi dashboard!"}/>
                 </div>
             </div>

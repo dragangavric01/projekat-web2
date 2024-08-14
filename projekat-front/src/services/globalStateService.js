@@ -15,7 +15,16 @@ export function getToken() {
 }
 
 export function getRole() {
-    localStorage.getItem('role');
+    var role = parseInt(localStorage.getItem('role'));
+    if (isNaN(role)) {
+        return null
+    }
+
+    return role;
+}
+
+export function clearGlobalState() {
+    localStorage.clear();
 }
 
 

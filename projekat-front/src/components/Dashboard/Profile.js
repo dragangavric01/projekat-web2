@@ -6,7 +6,7 @@ import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink';
 import { useLocation } from 'react-router-dom';
 import Header from '../elements/Header/Header.js'
 import { useContext } from 'react';
-import { getRole } from '../../services/stateService.js';
+import { getRole } from '../../services/globalStateService.js';
 import {UserRole} from '../../model/User.js'
 
 
@@ -24,8 +24,8 @@ export default function Profile() {
     return (
         <div>
             <Navigation/>
-            <div class="profile">
-                <div class="profile-center">
+            <div className="profile">
+                <div className="profile-center">
                     <Header number={1} text="Your profile"/>
                     <br/>
                     <div>

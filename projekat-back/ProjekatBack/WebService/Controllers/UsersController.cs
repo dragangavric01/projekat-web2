@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 namespace WebService.Controllers {
     [Route("users")]
     [ApiController]
+    [Authorize]
     public class UsersController : ControllerBase {
         private readonly IUserService userServiceProxy = ServiceProxy.Create<IUserService>(new Uri("fabric:/ProjekatBack/UserService"));
 

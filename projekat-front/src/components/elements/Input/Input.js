@@ -11,28 +11,28 @@ export const InputType = {
 export default function Input({name, type, handleChangeFunction, dropdownOptions}) {
     if (type == InputType.TEXT) {
         return (
-            <div class="input-field">
+            <div className="input-field">
                 <InputName name={name}/>
                 <TextInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.PASSWORD) {
         return (
-            <div class="input-field">
+            <div className="input-field">
                 <InputName name={name}/>
                 <PasswordInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.DATE) {
         return (
-            <div class="input-field">
+            <div className="input-field">
                 <InputName name={name}/>
                 <DateInput id={name} handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     } else if (type == InputType.DROPDOWN) {
         return (
-            <div class="input-field">
+            <div className="input-field">
                 <InputName name={name} />
                 <DropdownInput id={name} options={dropdownOptions} handleChangeFunction={handleChangeFunction}/>
             </div>

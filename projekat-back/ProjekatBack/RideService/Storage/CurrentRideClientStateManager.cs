@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideService {
-    public class CurrentRideClientStateHandler {
+namespace RideService.Storage {
+    public class CurrentRideClientStateManager {
         IReliableStateManager stateManager;
 
-        public CurrentRideClientStateHandler(IReliableStateManager stateManager) {
+        public CurrentRideClientStateManager(IReliableStateManager stateManager) {
             this.stateManager = stateManager;
         }
 
@@ -67,13 +67,5 @@ namespace RideService {
                 await Delete(username);
             }
         }
-    }
-
-    public class CurrentRideClientState {
-        public string RideId  {get; set; }
-        public string StartAddress { get; set; }
-        public string DestinationAddress { get; set; }
-        public float Price { get; set; }
-        public int WaitTimeInMinutes { get; set; }
     }
 }

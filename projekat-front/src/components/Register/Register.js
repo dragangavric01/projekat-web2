@@ -9,8 +9,8 @@ export default function Register() {
     return (
         <div>
             <Banner/>
-            <div class="register">
-                <div class="register-center">
+            <div className="register">
+                <div className="register-center">
                     <div>
                         <Header number={1} text={"Register"}/>
 

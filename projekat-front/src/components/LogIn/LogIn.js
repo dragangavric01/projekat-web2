@@ -7,7 +7,7 @@ import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
 import { logIn } from '../../services/httpService.js';
 import {UserRole} from '../../model/User.js';
-import { getRoleFromToken, setRole, setToken } from '../../services/stateService.js';
+import { getRoleFromToken, setRole, setToken } from '../../services/globalStateService.js';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import jwt_decode from "jwt-decode";
@@ -38,8 +38,8 @@ export default function LogIn() {
     return (
         <div>
             <Banner/>
-            <div class="login">
-                <div class="login-center">
+            <div className="login">
+                <div className="login-center">
                     <div>
                         <Header number={1} text={"Log in"}/>
                         <Input name="Email" type={InputType.TEXT} handleChangeFunction={handleEmailChange}/>

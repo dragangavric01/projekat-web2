@@ -12,8 +12,8 @@ export default function Drivers() {
     return (
         <div>
             <Navigation/>
-            <div class="drivers">
-                <div class="drivers-center">
+            <div className="drivers">
+                <div className="drivers-center">
                     <Header number={1} text="Drivers"/>
                     <br/>
                     <DriverTable drivers={drivers}/>
@@ -37,8 +37,8 @@ export function Driver() {
     return (
         <div>
             <Navigation/>
-            <div class="driver">
-                <div class="driver-center">
+            <div className="driver">
+                <div className="driver-center">
                     <DriverData driver={thisDriver}/>
                     
                     <br/>

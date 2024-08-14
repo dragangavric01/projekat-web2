@@ -9,8 +9,8 @@ export function NewRides() {
     return (
         <div>
             <Navigation/>
-            <div class="newrides">
-                <div class="newrides-center">
+            <div className="newrides">
+                <div className="newrides-center">
                     <Header number={1} text="New rides"/>
                     <br/>
                     <NewRidesTable rides={rides}/>

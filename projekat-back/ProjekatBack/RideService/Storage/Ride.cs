@@ -17,13 +17,14 @@ namespace RideService.Storage {
         public string DriverUsername { get; set; }
         public string ClientUsername { get; set; }
         public RideStatus Status { get; set; }
+        public int DriverRating { get; set; }
 
         public string PartitionKey { get; set; }
         public string RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
-        public Ride(string rideStartTime, string startAddress, string destinationAddress, double price, string driverUsername, string clientUsername, RideStatus status) {
+        public Ride(string rideStartTime, string startAddress, string destinationAddress, double price, string driverUsername, string clientUsername, RideStatus status, int driverRating) {
             RideStartTime = rideStartTime;
             StartAddress = startAddress;
             DestinationAddress = destinationAddress;
@@ -31,9 +32,11 @@ namespace RideService.Storage {
             DriverUsername = driverUsername;
             ClientUsername = clientUsername;
             Status = status;
+            DriverRating = driverRating;
 
             PartitionKey = "RidePartition";
             RowKey = rideStartTime + "_" + clientUsername;
+            DriverRating = driverRating;
         }
     }
 }

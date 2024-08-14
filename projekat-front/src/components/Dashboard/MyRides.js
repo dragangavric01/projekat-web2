@@ -7,8 +7,8 @@ export default function MyRides() {
     return (
         <div>
             <Navigation/>
-            <div class="myrides">
-                <div class="myrides-center">
+            <div className="myrides">
+                <div className="myrides-center">
                     <Header number={1} text="My rides"/>
                     <br/>
                     <MyRidesTable rides={rides}/>

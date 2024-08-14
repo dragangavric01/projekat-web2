@@ -7,8 +7,8 @@ export function CurrentRide() {
     return (
         <div>
             <Navigation/>
-            <div class="current-ride">
-                <div class="current-ride-center">
+            <div className="current-ride">
+                <div className="current-ride-center">
                     <Header number={1} text="Current ride"/>
                     <br/>
                     <CurrentRideInfo/>

@@ -19,8 +19,8 @@ export default function NewRide() {
     return (
         <div>
             <Navigation/>
-            <div class="newride">
-                <div class="newride-center">
+            <div className="newride">
+                <div className="newride-center">
                     <Header number={1} text="New ride"/>
                     <div>
                         <EnterNewRide/>
@@ -40,8 +40,8 @@ export default function NewRide() {
 
 function RateDriver() {
     return (
-        <div class="newride">
-            <div class="newride-center">
+        <div className="newride">
+            <div className="newride-center">
                 <Header number={1} text="Rate the driver:"/>
                 <br/>
                 <Rate/>
