@@ -15,8 +15,8 @@ namespace WebService.Controllers {
 
         [HttpGet("get-drivers")]
         [Authorize(Roles = "Admin")]
-        public async Task GetDrivers() {
-
+        public async Task<IActionResult> GetDrivers() {
+            return Problem(statusCode: 500);
         }
     }
 }

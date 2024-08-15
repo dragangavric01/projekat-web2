@@ -27,7 +27,7 @@ function ClientNavigation() {
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/new-ride" text="New ride" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/log-out" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
                 </ul>
             </div>
         </div>
@@ -43,7 +43,7 @@ function DriverNavigation() {
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/new-rides" text="New rides" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/log-out" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
                 </ul>
             </div>
         </div>
@@ -59,7 +59,7 @@ function AdminNavigation() {
                     <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/rides" text="Rides" size={HyperlinkSize.MEDIUM}/></li>
                     <li><Hyperlink path="/dashboard/drivers" text="Drivers" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/log-out" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
                 </ul>
             </div>
         </div>

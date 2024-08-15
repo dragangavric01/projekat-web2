@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RideService.Storage {
+namespace WebRideCommon.Model {
     public enum RideStatus { Requested, Accepted, InProgress, Finished }
 
     public class Ride : ITableEntity {
@@ -23,6 +23,9 @@ namespace RideService.Storage {
         public string RowKey { get; set; }
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
+
+
+        public Ride() { }
 
         public Ride(string rideStartTime, string startAddress, string destinationAddress, double price, string driverUsername, string clientUsername, RideStatus status, int driverRating) {
             RideStartTime = rideStartTime;

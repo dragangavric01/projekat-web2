@@ -4,7 +4,8 @@ export const InputType = {
     TEXT: 0,
     PASSWORD: 1,
     DATE:2,
-    DROPDOWN:3
+    DROPDOWN:3,
+    PICTURE:4
 };
 
 
@@ -35,6 +36,13 @@ export default function Input({name, type, handleChangeFunction, dropdownOptions
             <div className="input-field">
                 <InputName name={name} />
                 <DropdownInput id={name} options={dropdownOptions} handleChangeFunction={handleChangeFunction}/>
+            </div>
+        );
+    } else if (type == InputType.PICTURE) {
+        return (
+            <div className="input-field">
+                <InputName name={name} />
+                <PictureInput handleChangeFunction={handleChangeFunction}/>
             </div>
         );
     }
@@ -75,5 +83,11 @@ function DropdownInput({id, options, handleChangeFunction}) {
         <select id={id}  onChange={handleChangeFunction}>
             {selectOptions}
         </select>
+    );
+}
+
+function PictureInput({handleChangeFunction}) {
+    return (
+        <input type='file' accept='image/*' onChange={handleChangeFunction}/>
     );
 }

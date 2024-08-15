@@ -6,5 +6,4 @@ using System.Threading.Tasks;
 
 namespace Common.Model {
     public enum UserRole { Client = 0, Driver = 1, Admin = 2 }
-
 }

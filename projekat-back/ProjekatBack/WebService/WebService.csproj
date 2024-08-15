@@ -22,8 +22,4 @@
     <ProjectReference Include="..\WebUserCommon\WebUserCommon.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\" />
-  </ItemGroup>
-
 </Project>

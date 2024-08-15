@@ -7,7 +7,7 @@ import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
 import { logIn } from '../../services/httpService.js';
 import {UserRole} from '../../model/User.js';
-import { getRoleFromToken, setRole, setToken } from '../../services/globalStateService.js';
+import { clearGlobalState, getRoleFromToken, setRole, setToken } from '../../services/globalStateService.js';
 import { useNavigate } from 'react-router-dom';
 import { useContext, useState } from 'react';
 import jwt_decode from "jwt-decode";
@@ -24,8 +24,10 @@ export default function LogIn() {
     async function handleLogIn() {
         var logInData = {email: email, password: password};
         var token = await logIn(logInData);
-
-        if (token == null) {
+    
+        if (token == 'error') {
+            // show error
+        } else if (token == null) {
             // show error
         } else {
             setToken(token);
@@ -54,5 +56,13 @@ export default function LogIn() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export function LogOut() {
+    clearGlobalState();
+
+    return (
+        <LogIn/>
     );
 }

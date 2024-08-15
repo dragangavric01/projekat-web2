@@ -5,24 +5,24 @@ export const UserRole = {
     ADMIN: 2
 };
 
-class User {
+export class User {
     username;
     email;
     password;
     firstName;
     lastName;
-    dateofBirth;
+    dateOfBirth;
     address;
     role;
     picture;
 
-    constructor(username, email, password, firstName, lastName, dateofBirth, address, role, picture) {
+    constructor(username, email, password, firstName, lastName, dateOfBirth, address, role, picture) {
         this.username = username;
         this.email = email;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.dateofBirth = dateofBirth;
+        this.dateOfBirth = dateOfBirth;
         this.address = address;
         this.role = role;
         this.picture = picture;

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Fabric.Query;
 using System.Fabric;
@@ -13,6 +12,10 @@ using System.Security.Claims;
 using System.Linq;
 using WebUserCommon;
 using WebUserCommon.DTO;
+using Microsoft.AspNetCore.Mvc;
+using WebService.DTO;
+using WebUserCommon.Model;
+using System.IO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -23,36 +26,41 @@ namespace WebService.Controllers
     public class CurrentUserController : ControllerBase {
         private readonly IUserService userServiceProxy = ServiceProxy.Create<IUserService>(new Uri("fabric:/ProjekatBack/UserService"));
 
-        [HttpPost("register")]
-       public async Task<ActionResult> Register() {
-            return null;
-       }
-
-        [HttpPost("log-in")]
-        public async Task<ActionResult> LogIn([FromBody] LogInDTO logInDTO) {
+       [HttpPost("register")]
+       public async Task<IActionResult> Register([FromForm] ProfileDTO profileDTO) {
             try {
-                string token = await userServiceProxy.LogIn(logInDTO);
+                User user = new User(profileDTO.Username, profileDTO.Email, profileDTO.Password, profileDTO.FirstName, profileDTO.LastName, profileDTO.DateOfBirth, profileDTO.Address, profileDTO.Role);
+                
+                byte[] picture;
+                using (var memoryStream = new MemoryStream()) {
+                    profileDTO.Picture.CopyTo(memoryStream);
+                    picture = memoryStream.ToArray();
+                }
+
+                string token = await userServiceProxy.Register(user, picture);
                 return Ok(token);
             } catch {
-                return Problem();
+                return Problem(statusCode: 500);
             }
         }
 
-        [HttpGet("log-out")]
-        [Authorize]
-        public async Task LogOut() {
-            
+        [HttpPost("log-in")]
+        public async Task<IActionResult> LogIn([FromBody] LogInDTO logInDTO) {
+            try {
+                string token = await userServiceProxy.LogIn(logInDTO.Email, logInDTO.Password);
+                return Ok(token);
+            } catch {
+                return Problem(statusCode: 500);
+            }
         }
 
         [HttpPost("update")]
         [Authorize]
-        public async Task<ActionResult> Update() {
+        public async Task<IActionResult> Update() {
             string username = GetUsernameFromToken();
 
-            return Problem();
-
+            return Problem(statusCode: 500);
         }
-
 
 
         private string GetUsernameFromToken() {

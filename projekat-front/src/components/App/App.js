@@ -1,5 +1,5 @@
 import './App.css';
-import LogIn from '../LogIn/LogIn.js';
+import LogIn, { LogOut } from '../LogIn/LogIn.js';
 import Register from '../Register/Register.js';
 import Profile from '../Dashboard/Profile.js';
 import {BrowserRouter,Routes, Route, useNavigate} from 'react-router-dom'
@@ -19,9 +19,11 @@ export default function App() {
     return (
         <BrowserRouter>
             <Routes>
-                <Route path='/log-in' element={<LogIn/>}/>
                 <Route path='/register' element={<Register/>}/>
+                <Route path='/log-in' element={<LogIn/>}/>
+                <Route path='/log-out' element={<LogOut/>}/>
 
+                <Route path='' element={<ProtectedRoute component={<Dashboard/>}/>}/>
                 <Route path='/dashboard' element={<ProtectedRoute component={<Dashboard/>}/>}/>
                 <Route path='/dashboard/profile' element={<ProtectedRoute component={<Profile/>}/>}/>
 

@@ -11,16 +11,18 @@ using System.Collections.Concurrent;
 using System.ComponentModel;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
-using WebUserCommon.DTO;
+using Azure;
+using WebUserCommon.Model;
 
 namespace UserService.Storage {
     public class UserStorageManager {
         private readonly TableClient tableClient;
         private readonly BlobContainerClient blobContainerClient;
+        private string usersTablePartitionKey = "UserPartition";
 
         public UserStorageManager() {
             BlobServiceClient blobServiceClient = new BlobServiceClient("UseDevelopmentStorage=true");
-            blobContainerClient = blobServiceClient.GetBlobContainerClient("aaaaa");
+            blobContainerClient = blobServiceClient.GetBlobContainerClient("profilepictures");
             blobContainerClient.CreateIfNotExists(PublicAccessType.Blob);
 
             var tableServiceClient = new TableServiceClient("UseDevelopmentStorage=true");
@@ -28,32 +30,43 @@ namespace UserService.Storage {
             tableClient.CreateIfNotExists();
         }
 
-        public void CreateUser(User user, BinaryData picture) {
-            tableClient.AddEntity(user);
+        public bool CreateUser(User user, byte[] picture) {
+            try {
+                tableClient.AddEntity(user);
+            } catch (RequestFailedException ex) {
+                if (ex.Status == 409) {
+                    return false;
+                }
+            }
 
-            CreateOrUpdatePictureBlob(user.PictureName, picture);
+            CreateOrUpdatePictureBlob(user.Username, picture);
+
+            return true;
         }
 
-        public ProfileDTO ReadUser(string username) {
-            var response = tableClient.GetEntity<User>("UserPartition", username);
-            User user = response.Value;
+        public User ReadUser(string username) {
+            var response = tableClient.GetEntity<User>(usersTablePartitionKey, username);
 
-            BinaryData picture = ReadPictureBlob(user.PictureName);
-
-            return new ProfileDTO(user.Username, user.Email, user.PasswordHash, user.FirstName, user.LastName, user.DateOfBirth, user.Address, user.Role, picture);
+            return response.Value;
         }
 
-        public void CreateOrUpdatePictureBlob(string pictureName, BinaryData picture) {
-            BlobClient blobClient = blobContainerClient.GetBlobClient(pictureName);
-            blobClient.Upload(picture);
+        public User ReadUserByEmail(string email) {
+            Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Email == email);
+
+            return queryResults.First();
+        }
+
+        public void CreateOrUpdatePictureBlob(string username, byte[] picture) {
+            BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
+            blobClient.Upload(new BinaryData(picture));
         }
 
 
-        public BinaryData ReadPictureBlob(string pictureName) {
-            BlobClient blobClient = blobContainerClient.GetBlobClient(pictureName);
+        public byte[] ReadPictureBlob(string username) {
+            BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
             BlobDownloadResult result = blobClient.DownloadContent();
 
-            return result.Content;
+            return result.Content.ToArray();
         }
     }
 }

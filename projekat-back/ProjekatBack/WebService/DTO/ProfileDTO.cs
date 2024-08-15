@@ -1,12 +1,7 @@
 ﻿using Common.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
-namespace WebUserCommon.DTO {
-
+namespace WebService.DTO {
     public class ProfileDTO {
         public string Username { get; set; }
         public string Email { get; set; }
@@ -16,9 +11,11 @@ namespace WebUserCommon.DTO {
         public string DateOfBirth { get; set; }
         public string Address { get; set; }
         public UserRole Role { get; set; }
-        public BinaryData Picture { get; set; }
+        public IFormFile Picture { get; set; }
 
-        public ProfileDTO(string username, string email, string password, string firstName, string lastName, string dateOfBirth, string address, UserRole role, BinaryData picture) {
+        public ProfileDTO() { }
+
+        public ProfileDTO(string username, string email, string password, string firstName, string lastName, string dateOfBirth, string address, UserRole role, IFormFile picture) {
             Username = username;
             Email = email;
             Password = password;

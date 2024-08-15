@@ -1,4 +1,5 @@
-﻿using Microsoft.IdentityModel.Tokens;
+﻿using Common.Model;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,10 +13,12 @@ namespace UserService {
     public class Token {
         public string Content { get; set; }
 
-        public Token(string secretKey, string issuerURL, string username, string userRole) {
+        public Token(string secretKey, string issuerURL, string username, UserRole userRole) {
+
+
             var claims = new[] {
                 new Claim(ClaimTypes.Name, username),
-                new Claim(ClaimTypes.Role, userRole)
+                new Claim(ClaimTypes.Role, userRole.ToString())
             };
 
             var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(secretKey));

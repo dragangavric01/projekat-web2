@@ -11,8 +11,9 @@ using Common.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using WebUserCommon;
-using WebUserCommon.DTO;
 using UserService.Storage;
+using System.IO;
+using WebUserCommon.Model;
 
 namespace UserService
 {
@@ -27,45 +28,32 @@ namespace UserService
         public UserService(StatelessServiceContext context) : base(context) {
             IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
             IConfiguration configuration = builder.Build();
+
             secretKey = configuration["SecretKey"];
             tokenIssuerURL = configuration["TokenIssuerURL"];
         }
 
 
-        public async Task<string> Register() {
-            return null;
+        public async Task<string> Register(User user, byte[] picture) {
+            user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-            /*
-            if (dbHandler.Create(user)) {
-                userState.Create(user.Username, user.Role);
-                return new FrontStateDTO() { Username = user.Username, Role = user.Role };
-            }
-            */
-        }
-
-        public async Task<string> LogIn(LogInDTO logInDTO) {
-            if (logInDTO.Email != "a@" || logInDTO.Password != "123") {
+            if (!userStorageManager.CreateUser(user, picture)) {
                 return null;
             }
 
-            Token token = new Token(secretKey, tokenIssuerURL, "njegov_username", "Client");
+            Token token = new Token(secretKey, tokenIssuerURL, user.Username, user.Role);
             return token.Content;
-
-
-
-            /*
-            User user = dbHandler.Read(logInDTO.Username);
-            if (user != null && loginDTO.Password == user.Password) {
-                userState.Create(user.Username, user.Role);
-                return new FrontStateDTO() { Username = user.Username, Role = user.Role };
-            }
-
-            return null;
-            */
         }
 
-        public async Task LogOut() {
+        public async Task<string> LogIn(string email, string password) {
+            User user = userStorageManager.ReadUserByEmail(email);
 
+            if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password)) {
+                return null;
+            }
+
+            Token token = new Token(secretKey, tokenIssuerURL, user.Username, user.Role);
+            return token.Content;
         }
 
         public async Task<bool> Update() {

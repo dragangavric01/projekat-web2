@@ -19,6 +19,7 @@ namespace UserService.Storage {
         public DateTimeOffset? Timestamp { get; set; }
         public ETag ETag { get; set; }
 
+        public DriverData() { }
 
         public DriverData(string username, RegistrationRequestStatus registrationRequestStatus, bool blocked) {
             Username = username;

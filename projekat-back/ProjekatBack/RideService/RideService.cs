@@ -9,16 +9,17 @@ using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
 using Microsoft.ServiceFabric.Services.Remoting.Runtime;
 using WebRideCommon;
+using RideService.Storage;
 
 namespace RideService {
     /// <summary>
     /// An instance of this class is created for each service replica by the Service Fabric runtime.
     /// </summary>
     internal sealed class RideService : StatefulService, IRideService {
-        CurrentRideClientStateHandler currentRideClientStateHandler;
+        CurrentRideClientStateManager currentRideClientStateHandler;
 
         public RideService(StatefulServiceContext context) : base(context) { 
-            currentRideClientStateHandler = new CurrentRideClientStateHandler(this.StateManager);
+            currentRideClientStateHandler = new CurrentRideClientStateManager(this.StateManager);
         }
 
         public async Task F() {
