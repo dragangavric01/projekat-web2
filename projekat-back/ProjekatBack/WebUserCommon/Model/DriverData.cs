@@ -27,7 +27,7 @@ namespace UserService.Storage {
             Blocked = blocked;
 
             PartitionKey = "DriverDataPartition";
-            RowKey = username;
+            RowKey = Guid.NewGuid().ToString();
         }
     }
 }

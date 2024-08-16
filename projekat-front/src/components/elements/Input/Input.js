@@ -9,26 +9,26 @@ export const InputType = {
 };
 
 
-export default function Input({name, type, handleChangeFunction, dropdownOptions}) {
+export default function Input({name, type, handleChangeFunction, dropdownOptions, initialValue, placeholder}) {
     if (type == InputType.TEXT) {
         return (
             <div className="input-field">
                 <InputName name={name}/>
-                <TextInput id={name} handleChangeFunction={handleChangeFunction}/>
+                <TextInput id={name} handleChangeFunction={handleChangeFunction} initialValue={initialValue}/>
             </div>
         );
     } else if (type == InputType.PASSWORD) {
         return (
             <div className="input-field">
                 <InputName name={name}/>
-                <PasswordInput id={name} handleChangeFunction={handleChangeFunction}/>
+                <PasswordInput id={name} handleChangeFunction={handleChangeFunction} placeholder={placeholder}/>
             </div>
         );
     } else if (type == InputType.DATE) {
         return (
             <div className="input-field">
                 <InputName name={name}/>
-                <DateInput id={name} handleChangeFunction={handleChangeFunction}/>
+                <DateInput id={name} handleChangeFunction={handleChangeFunction} initialValue={initialValue}/>
             </div>
         );
     } else if (type == InputType.DROPDOWN) {
@@ -54,22 +54,34 @@ function InputName({name}) {
     );
 }
 
-function TextInput({id, handleChangeFunction}) {
+function TextInput({id, handleChangeFunction, initialValue}) {
+    if (initialValue == null) {
+        return (
+            <input id={id} type="text" onChange={handleChangeFunction}/>
+        );
+    } else {
+        return (
+            <input id={id} type="text" onChange={handleChangeFunction}  value={initialValue}/>
+        );
+    }
+}
+
+function PasswordInput({id, handleChangeFunction, placeholder}) {
     return (
-        <input id={id} type="text" onChange={handleChangeFunction}/>
+        <input id={id} type="password" placeholder={placeholder} onChange={handleChangeFunction} />
     );
 }
 
-function PasswordInput({id, handleChangeFunction}) {
-    return (
-        <input id={id} type="password" onChange={handleChangeFunction}/>
-    );
-}
-
-function DateInput({id, handleChangeFunction}) {
-    return (
-        <input id={id} type="date" onChange={handleChangeFunction}/>
-    );
+function DateInput({id, handleChangeFunction, initialValue}) {
+    if (initialValue == null) {
+        return (
+            <input id={id} type="date" onChange={handleChangeFunction} />
+        );
+    } else {
+        return (
+            <input id={id} type="date" onChange={handleChangeFunction}  value={initialValue}/>
+        );
+    }
 }
 
 function DropdownInput({id, options, handleChangeFunction}) {

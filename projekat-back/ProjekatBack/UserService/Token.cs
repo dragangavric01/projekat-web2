@@ -13,7 +13,7 @@ namespace UserService {
     public class Token {
         public string Content { get; set; }
 
-        public Token(string secretKey, string issuerURL, string username, UserRole userRole) {
+        public Token(string secretKey, string issuerURL, string username, UserRole? userRole) {
 
 
             var claims = new[] {
@@ -25,8 +25,8 @@ namespace UserService {
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
             var token = new JwtSecurityToken(
                 issuer: issuerURL,
+                expires: DateTime.UtcNow.AddHours(1),
                 claims: claims,
-                expires: DateTime.Now.AddHours(1),
                 signingCredentials: creds);
 
             var tokenHandler = new JwtSecurityTokenHandler();

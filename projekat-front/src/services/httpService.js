@@ -21,7 +21,18 @@ function getAxios() {
         baseURL: process.env.REACT_APP_BACKEND_URL, 
         headers: {
           'Content-Type': 'application/json',
-          "Authorization": "Bearer ${token}"
+          "Authorization": `Bearer ${token}`
+        }
+    })
+}
+
+function getAxiosFormData() {
+    const token = getToken();
+
+    return axios.create({
+        baseURL: process.env.REACT_APP_BACKEND_URL, 
+        headers: {
+          "Authorization": `Bearer ${token}`
         }
     })
 }
@@ -31,7 +42,7 @@ export const logIn = async (logInData) => {
         const response = await axNoToken.post('/current-user/log-in', logInData);
         if (response.status == 500) {
             return 'error';
-        }
+        } 
 
         return response.data;
     } catch (error) {
@@ -65,11 +76,56 @@ export const register = async (user) => {
     }
 };
 
+export const updateProfile = async (profileData) => {
+    const formData = new FormData();
+    formData.append("username", profileData.username);
+    formData.append("email", profileData.email);
+    formData.append("password", profileData.password);
+    formData.append("firstName", profileData.firstName);
+    formData.append("lastName", profileData.lastName);
+    formData.append("dateOfBirth", profileData.dateOfBirth);
+    formData.append("address", profileData.address);
+    formData.append("role", profileData.role);
+    formData.append("picture", profileData.picture); 
+    
+    try {
+        const response = await getAxiosFormData().post('/current-user/update', formData);
+        if (response.status == 500) {
+            return 'error';
+        } else if (response.status == 401) {
+            return 'token expired'
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return 'error';
+    }
+}
+
+export const getCurrentUser = async () => {
+    try {
+        const response = await getAxios().get('/current-user/get-profile');
+        if (response.status == 500) {
+            return 'error';
+        } else if (response.status == 401) {
+            return 'token expired'
+        }
+
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return 'error';
+    }
+};
+
 export const getDrivers = async () => {
     try {
         const response = await getAxios().get('/users/get-drivers');
         if (response.status == 500) {
             return 'error';
+        } else if (response.status == 401) {
+            return 'token expired'
         }
 
         return response.data;
@@ -84,6 +140,8 @@ export const getRides = async () => {
         const response = await getAxios().get('/rides/get-rides');
         if (response.status == 500) {
             return 'error';
+        } else if (response.status == 401) {
+            return 'token expired'
         }
 
         return response.data;

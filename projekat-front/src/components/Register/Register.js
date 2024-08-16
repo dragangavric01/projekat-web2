@@ -45,6 +45,8 @@ export default function Register() {
 
         if (token == 'error') {
             // show error
+        } else if (token == 'token expired') {
+            navigate('/log-out');
         } else if (token == null) {
             // show error
         } else {

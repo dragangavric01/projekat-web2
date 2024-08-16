@@ -38,7 +38,7 @@ namespace WebRideCommon.Model {
             DriverRating = driverRating;
 
             PartitionKey = "RidePartition";
-            RowKey = rideStartTime + "_" + clientUsername;
+            RowKey = Guid.NewGuid().ToString();
             DriverRating = driverRating;
         }
     }

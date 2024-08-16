@@ -14,6 +14,7 @@ using WebUserCommon;
 using UserService.Storage;
 using System.IO;
 using WebUserCommon.Model;
+using WebUserCommon.DTO;
 
 namespace UserService
 {
@@ -24,6 +25,7 @@ namespace UserService
         string secretKey;
         string tokenIssuerURL;
         UserStorageManager userStorageManager = new UserStorageManager();
+        DriverDataStorageManager driverDataStorageManager = new DriverDataStorageManager();
 
         public UserService(StatelessServiceContext context) : base(context) {
             IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json");
@@ -41,6 +43,12 @@ namespace UserService
                 return null;
             }
 
+            if (user.Role == UserRole.Driver) {
+                if (!driverDataStorageManager.Create(new DriverData(user.Username, RegistrationRequestStatus.Pending, false))) {
+                    return null;
+                }
+            }
+
             Token token = new Token(secretKey, tokenIssuerURL, user.Username, user.Role);
             return token.Content;
         }
@@ -56,8 +64,34 @@ namespace UserService
             return token.Content;
         }
 
-        public async Task<bool> Update() {
-            return false;
+        public async Task<ProfileDownloadDTO> GetUser(string username) {
+            User user = userStorageManager.ReadUser(username);
+            if (user == null) {
+                return null;
+            }
+
+            byte[] picture = userStorageManager.ReadPictureBlob(username);
+
+            return new ProfileDownloadDTO(user.Username, user.Email, user.FirstName, user.LastName, user.DateOfBirth, user.Address, Convert.ToBase64String(picture));
+        }
+
+        public async Task<string> Update(string username, User user, byte[] picture) {
+            if (user.Password != null) {
+                user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
+            }
+
+            bool success = userStorageManager.UpdateUser(username, user, picture);
+
+            if (!success) {
+                return null;
+            }
+
+            if (username != user.Username) {
+                Token token = new Token(secretKey, tokenIssuerURL, user.Username, user.Role);
+                return token.Content;
+            } else {
+                return "";
+            }
         }
 
 

@@ -42,3 +42,4 @@ export default function Hyperlink({text, path, size, textColor, state}) {
         }
     } 
 }
+

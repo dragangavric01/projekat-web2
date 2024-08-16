@@ -13,6 +13,7 @@ using Azure.Storage.Blobs.Models;
 using Azure.Storage.Blobs.Specialized;
 using Azure;
 using WebUserCommon.Model;
+using System.Net.Http.Headers;
 
 namespace UserService.Storage {
     public class UserStorageManager {
@@ -23,7 +24,7 @@ namespace UserService.Storage {
         public UserStorageManager() {
             BlobServiceClient blobServiceClient = new BlobServiceClient("UseDevelopmentStorage=true");
             blobContainerClient = blobServiceClient.GetBlobContainerClient("profilepictures");
-            blobContainerClient.CreateIfNotExists(PublicAccessType.Blob);
+            blobContainerClient.CreateIfNotExists(PublicAccessType.None);
 
             var tableServiceClient = new TableServiceClient("UseDevelopmentStorage=true");
             tableClient = tableServiceClient.GetTableClient("UsersTable");
@@ -32,41 +33,128 @@ namespace UserService.Storage {
 
         public bool CreateUser(User user, byte[] picture) {
             try {
-                tableClient.AddEntity(user);
-            } catch (RequestFailedException ex) {
-                if (ex.Status == 409) {
-                    return false;
+                Try:
+                try {
+                    tableClient.AddEntity(user);
+                } catch (RequestFailedException ex) {
+                    if (ex.Status == 409) {
+                        // RowKey already exists
+                        user.RowKey = Guid.NewGuid().ToString();
+                        goto Try;
+                    }
                 }
-            }
 
-            CreateOrUpdatePictureBlob(user.Username, picture);
+                CreateOrUpdatePictureBlob(user.Username, picture);
+            } catch (Exception) {
+                return false;
+            }
 
             return true;
         }
 
         public User ReadUser(string username) {
-            var response = tableClient.GetEntity<User>(usersTablePartitionKey, username);
-
-            return response.Value;
+            try {
+                Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Username == username);
+                return queryResults.First();
+            } catch (Exception) {
+                return null;
+            }
         }
 
         public User ReadUserByEmail(string email) {
-            Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Email == email);
-
-            return queryResults.First();
+            try {
+                Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Email == email);
+                return queryResults.First();
+            } catch (Exception) {
+                return null;
+            }
         }
 
-        public void CreateOrUpdatePictureBlob(string username, byte[] picture) {
+        public bool UpdateUser(string username, User user, byte[] picture) {
+            User existingUser = ReadUser(username);
+            if (existingUser == null) {
+                return false;
+            }
+
+            if (user.Username != null) {
+                existingUser.Username = user.Username;
+            }
+
+            if (user.Email != null) {
+                existingUser.Email = user.Email;
+            }
+
+            if (user.Password != null) {
+                existingUser.Password = user.Password;
+            }
+
+            if (user.FirstName != null) {
+                existingUser.FirstName = user.FirstName;
+            }
+
+            if (user.LastName != null) {
+                existingUser.LastName = user.LastName;
+            }
+
+            if (user.DateOfBirth != null) {
+                existingUser.DateOfBirth = user.DateOfBirth;
+            }
+
+            if (user.Address != null) {
+                existingUser.Address = user.Address;
+            }
+
+            try {
+                tableClient.UpdateEntity(existingUser, existingUser.ETag, TableUpdateMode.Merge);
+
+                if (picture != null) {
+                    if (username != existingUser.Username) {
+                        CreateOrUpdatePictureBlob(existingUser.Username, picture);
+                        DeletePictureBlob(username);
+                    } else {
+                        CreateOrUpdatePictureBlob(username, picture);
+                    }
+                } else if (username != existingUser.Username) {
+                    ChangePictureBlobName(username, existingUser.Username);
+                }
+            } catch (Exception) {
+                return false;
+            }
+
+            return true;
+        }
+
+        private void CreateOrUpdatePictureBlob(string username, byte[] picture) {
             BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
-            blobClient.Upload(new BinaryData(picture));
+            blobClient.Upload(new BinaryData(picture), overwrite: true);
         }
 
 
         public byte[] ReadPictureBlob(string username) {
-            BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
-            BlobDownloadResult result = blobClient.DownloadContent();
+            try {
+                BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
+                BlobDownloadResult result = blobClient.DownloadContent();
 
-            return result.Content.ToArray();
+                return result.Content.ToArray();
+            } catch (Exception) {
+                return null;
+            }
+        }
+
+        private void DeletePictureBlob(string username) {
+            BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
+            blobClient.DeleteIfExists(DeleteSnapshotsOption.IncludeSnapshots);
+        }
+
+        private void ChangePictureBlobName(string oldUsername, string newUsername) {
+            BlobClient blobClient1 = blobContainerClient.GetBlobClient("picture_" + oldUsername);
+
+            BlobDownloadResult result = blobClient1.DownloadContent();
+
+            BlobClient blobClient2 = blobContainerClient.GetBlobClient("picture_" + newUsername);
+            blobClient2.Upload(result.Content);
+
+            blobClient1.DeleteIfExists(DeleteSnapshotsOption.IncludeSnapshots);
         }
     }
 }

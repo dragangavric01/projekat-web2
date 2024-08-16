@@ -26,7 +26,7 @@ namespace WebUserCommon.Model {
         [DataMember]
         public string Address { get; set; }
         [DataMember]
-        public UserRole Role { get; set; }
+        public UserRole? Role { get; set; }
 
         [DataMember]
         public string PartitionKey { get; set; }
@@ -40,7 +40,7 @@ namespace WebUserCommon.Model {
 
         public User() { }
 
-        public User(string username, string email, string password, string firstName, string lastName, string dateOfBirth, string address, UserRole role) {
+        public User(string username, string email, string password, string firstName, string lastName, string dateOfBirth, string address, UserRole? role) {
             Username = username;
             Email = email;
             Password = password;
@@ -51,7 +51,7 @@ namespace WebUserCommon.Model {
             Role = role;
 
             PartitionKey = "UserPartition";
-            RowKey = username;
+            RowKey = Guid.NewGuid().ToString();
         }
     }
 }

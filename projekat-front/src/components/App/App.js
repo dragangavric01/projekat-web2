@@ -1,7 +1,7 @@
 import './App.css';
 import LogIn, { LogOut } from '../LogIn/LogIn.js';
 import Register from '../Register/Register.js';
-import Profile from '../Dashboard/Profile.js';
+import Profile, { EditProfile } from '../Dashboard/Profile.js';
 import {BrowserRouter,Routes, Route, useNavigate} from 'react-router-dom'
 import MyRides from '../Dashboard/MyRides.js';
 import NewRide, {CurrentRideClient} from '../Dashboard/NewRide.js';
@@ -26,6 +26,7 @@ export default function App() {
                 <Route path='' element={<ProtectedRoute component={<Dashboard/>}/>}/>
                 <Route path='/dashboard' element={<ProtectedRoute component={<Dashboard/>}/>}/>
                 <Route path='/dashboard/profile' element={<ProtectedRoute component={<Profile/>}/>}/>
+                <Route path='/dashboard/edit-profile' element={<ProtectedRoute component={<EditProfile/>}/>}/>
 
                 <Route path='/dashboard/my-rides' element={<ProtectedRoute component={<MyRides/>} requiredRole={UserRole.CLIENT} alternateRole={UserRole.Driver}/>}/>
                 <Route path='/dashboard/rides' element={<ProtectedRoute component={<Rides/>} requiredRole={UserRole.ADMIN}/>}/>
@@ -49,8 +50,10 @@ function ProtectedRoute({component, requiredRole, alternateRole}) {
         return (<LogIn/>);
     } 
 
-    if (requiredRole != null && (role != requiredRole && role != alternateRole)) {
-        return (<Text content={"Unauthorized access"}/>);
+    if (requiredRole != null && role != requiredRole) {
+        if (alternateRole != null && role != requiredRole) {
+            return (<Text content={"Unauthorized access"}/>);
+        }
     }
 
     return component;

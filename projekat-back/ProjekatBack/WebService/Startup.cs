@@ -30,9 +30,10 @@ namespace WebService {
             {
                 options.AddPolicy("AllowAccess",
                     builder => {
-                        builder.WithOrigins(Configuration["ReactAppURL"]) 
+                        builder.WithOrigins(Configuration["ReactAppURL"])
                                .AllowAnyMethod()
-                               .AllowAnyHeader();
+                               .AllowAnyHeader()
+                               .AllowCredentials();
                     });
             });
 
@@ -70,10 +71,10 @@ namespace WebService {
 
             app.UseRouting();
 
+            app.UseCors("AllowAccess");
+
             app.UseAuthentication();
             app.UseAuthorization();
-
-            app.UseCors("AllowAccess");  
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
