@@ -1,27 +1,28 @@
 import './App.css';
 import LogIn, { LogOut } from '../LogIn/LogIn.js';
 import Register from '../Register/Register.js';
-import Profile, { EditProfile } from '../Dashboard/Profile.js';
-import {BrowserRouter,Routes, Route, useNavigate} from 'react-router-dom'
+import Profile from '../Dashboard/Profile.js';
+import { EditProfile } from '../Dashboard/EditProfile.js';
+import {BrowserRouter,Routes, Route, useNavigate, useLocation} from 'react-router-dom'
 import MyRides from '../Dashboard/MyRides.js';
-import NewRide, {CurrentRideClient} from '../Dashboard/NewRide.js';
+import NewRide, {ConfirmRide, CurrentRide, CurrentRideClient, CurrentRideWait} from '../Dashboard/NewRide.js';
 import {NewRides, CurrentRideDriver} from '../Dashboard/NewRides.js';
 import Rides from '../Dashboard/Rides.js';
 import Drivers, { Driver } from '../Dashboard/Drivers.js';
-import { CurrentRide } from '../Dashboard/CurrentRide.js';
 import Dashboard from '../Dashboard/Dashboard.js';
-import { clearGlobalState, getRole, getToken, setRole } from '../../services/globalStateService.js';
+import { clearGlobalState, getIsRideActive, getRole, getToken, setRole } from '../../services/globalStateService.js';
 import Text from '../elements/Text/Text.js';
 import { UserRole } from '../../model/User.js';
+import { useEffect } from 'react';
 
 
 export default function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
             <Routes>
                 <Route path='/register' element={<Register/>}/>
                 <Route path='/log-in' element={<LogIn/>}/>
-                <Route path='/log-out' element={<LogOut/>}/>
 
                 <Route path='' element={<ProtectedRoute component={<Dashboard/>}/>}/>
                 <Route path='/dashboard' element={<ProtectedRoute component={<Dashboard/>}/>}/>
@@ -36,14 +37,14 @@ export default function App() {
 
                 <Route path='/dashboard/new-ride' element={<ProtectedRoute component={<NewRide/>} requiredRole={UserRole.CLIENT}/>}/>
                 <Route path='/dashboard/new-rides' element={<ProtectedRoute component={<NewRides/>} requiredRole={UserRole.DRIVER}/>}/>
-                <Route path='/dashboard/current-ride' element={<ProtectedRoute component={<CurrentRide/>} requiredRole={UserRole.CLIENT} alternateRole={Driver}/>}/>
+                <Route path='/dashboard/current-ride' element={<ProtectedRoute component={<CurrentRide/>} requiredRole={UserRole.CLIENT} alternateRole={UserRole.DRIVER} rideActiveRestriction={true}/>}/>
             </Routes>
         </BrowserRouter>
     );
 }
 
 
-function ProtectedRoute({component, requiredRole, alternateRole}) {
+function ProtectedRoute({component, requiredRole, alternateRole, rideActiveRestriction}) {
     const role = getRole();
 
     if (role == null) {
@@ -51,12 +52,26 @@ function ProtectedRoute({component, requiredRole, alternateRole}) {
     } 
 
     if (requiredRole != null && role != requiredRole) {
-        if (alternateRole != null && role != requiredRole) {
+        if (alternateRole == null || (alternateRole != null && role != alternateRole)) {
             return (<Text content={"Unauthorized access"}/>);
+        }
+    }
+
+    if (rideActiveRestriction) {
+        if (!getIsRideActive()) {
+            return (<Text content={"There is no active ride"}/>);
         }
     }
 
     return component;
 }
 
+function ScrollToTop() {
+    const { pathname } = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}

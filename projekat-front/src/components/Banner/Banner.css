@@ -1,12 +1,12 @@
 
 .banner {
     text-align: center;
-    background-color: #515151;
+    background-color: #595959;
     padding: 20px;
 }
 
 .banner p {
-    color: white;
+    color: rgb(255, 214, 49);
     font-size: 80px;
     font-family: fantasy;
     display: inline;

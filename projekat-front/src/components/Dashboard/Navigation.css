@@ -22,9 +22,11 @@
     text-align: center;
     padding: 14px 50px;
     text-decoration: none;
+    border: 3px solid #333;
+    font-weight: 600;
 }
 
 .navbar a:hover {
-    background-color: #ddd;
-    color: black;
+    background-color: #ffffbd;
+    color: #333;
 }

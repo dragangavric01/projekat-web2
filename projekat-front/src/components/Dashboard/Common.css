@@ -1,0 +1,37 @@
+
+.center-rectangle {
+    display: flex;
+    justify-content: center; 
+}
+
+.rectangle {
+    width: 900px;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    
+    display: flex;
+    flex-direction: column;  
+    align-items: center;    
+
+    background-color: #ffffbd;
+    border-radius: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.rectangle-wide {
+    width: 1300px;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    padding-top: 20px;
+    padding-bottom: 50px;
+    
+    display: flex;
+    flex-direction: column;  
+    align-items: center;    
+
+    background-color: #ffffbd;
+    border-radius: 30px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}

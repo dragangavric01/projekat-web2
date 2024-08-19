@@ -50,7 +50,7 @@ export default function Input({name, type, handleChangeFunction, dropdownOptions
 
 function InputName({name}) {
     return (
-        <label for={name}>{name}:</label>
+        <label for={name} style={{fontWeight: '600'}}>{name}:</label>
     );
 }
 
@@ -100,6 +100,6 @@ function DropdownInput({id, options, handleChangeFunction}) {
 
 function PictureInput({handleChangeFunction}) {
     return (
-        <input type='file' accept='image/*' onChange={handleChangeFunction}/>
+        <input type='file' accept='image/*' onChange={handleChangeFunction} style={{width: '250px'}}/>
     );
 }

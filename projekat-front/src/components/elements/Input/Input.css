@@ -9,6 +9,7 @@ input {
     font-family: Arial;
     font-weight: 500;
     font-size: larger;
+    background-color: lightyellow;
 }
 
 select {
@@ -16,8 +17,9 @@ select {
     font-weight: 500;
     font-size: larger;
     width: 100px;
+    background-color: lightyellow;
 }
 
 .input-field {
-    padding-top: 10px;
+    padding-bottom: 15px;
 }

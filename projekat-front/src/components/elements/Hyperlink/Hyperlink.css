@@ -37,3 +37,15 @@
     font-weight: 500;
     font-size: 60px;
 }
+
+.hyperlink-handler {
+    color:  darkblue;
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
+.hyperlink-handler:hover {
+    cursor: pointer;
+}

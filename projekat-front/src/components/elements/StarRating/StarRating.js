@@ -2,8 +2,7 @@ import './StarRating.css'
 import { useState } from 'react';
 import Text from '../Text/Text';
 
-export function Rate() {
-    const [rating, setRating] = useState(0);
+export function Rate({rating, setRating}) {
     const [hover, setHover] = useState(0);
 
      return (

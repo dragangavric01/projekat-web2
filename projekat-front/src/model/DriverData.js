@@ -1,12 +1,12 @@
 
 class DriverData {
-    driverUsername;
+    username;
     registrationRequestStatus;
-    isBlocked;
+    blocked;
 
-    constructor(driverUsername, registrationRequestStatus, isBlocked) {
-        this.driverUsername = driverUsername;
+    constructor(username, registrationRequestStatus, blocked) {
+        this.username = username;
         this.registrationRequestStatus = registrationRequestStatus;
-        this.isBlocked = isBlocked;
+        this.blocked = blocked;
     }
 }

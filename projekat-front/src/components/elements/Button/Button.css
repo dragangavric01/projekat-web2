@@ -1,29 +1,35 @@
 .btn-small {
     font-family: Arial;
-    font-weight: 500;
+    font-weight: 600;
     font-size: larger;
     width: 100px;
     height: 40px;
     cursor: pointer;
     margin: 10px;
+    background-color:lightyellow;
+    border-radius: 10px;
 }
 
 .btn-medium {
     font-family: Arial;
-    font-weight: 500;
+    font-weight: 600;
     font-size: larger;
     width: 150px;
     height: 40px;
     cursor: pointer;
     margin: 10px;
+    background-color:lightyellow;
+    border-radius: 10px;
 }
 
 .btn-large {
     font-family: Arial;
-    font-weight: 500;
+    font-weight: 600;
     font-size: larger;
     width: 200px;
     height: 40px;
     cursor: pointer;
     margin: 10px;
+    background-color:lightyellow;
+    border-radius: 10px;
 }

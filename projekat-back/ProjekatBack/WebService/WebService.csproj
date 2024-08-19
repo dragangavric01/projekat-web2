@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
+    <ProjectReference Include="..\WebRideCommon\WebRideCommon.csproj" />
     <ProjectReference Include="..\WebUserCommon\WebUserCommon.csproj" />
   </ItemGroup>
 

@@ -12,6 +12,7 @@ export default function Rides() {
                 <div className="rides-center">
                     <Header number={1} text="Rides"/>
                     <br/>
+                    <br/>
                     <RidesTable rides={rides}/>
                 </div>
             </div>

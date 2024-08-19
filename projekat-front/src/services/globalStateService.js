@@ -10,6 +10,10 @@ export function setRole(role) {
     localStorage.setItem('role', role);
 }
 
+export function setIsRideActive(isRideAcive) {
+    localStorage.setItem('isRideAcive', isRideAcive);
+}
+
 export function getToken() {
     return localStorage.getItem('token');
 }
@@ -21,6 +25,15 @@ export function getRole() {
     }
 
     return role;
+}
+
+export function getIsRideActive() {
+    const isRideAcive = localStorage.getItem('isRideAcive');
+    if (isRideAcive == null) {
+        return false;
+    }
+
+    return isRideAcive;
 }
 
 export function clearGlobalState() {

@@ -1,4 +1,42 @@
+
 body {
     background-color:lightyellow;
     margin: 0;
+}
+
+table {
+    font-family: Arial;
+    font-size: larger;   
+    border-collapse: collapse;
+    border: 1px solid #dddddd;
+}
+
+th {
+    background-color: #fff1a3;
+    text-align: center;
+    border: 1px solid #dddddd;
+    max-width: 300px;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+td {
+    text-align: center;
+    max-width: 250px;
+    overflow: hidden;
+}
+
+td p, a {
+   margin-left: 15px; 
+   margin-right: 15px; 
+   margin-top: 0px;
+   margin-bottom: 0px;
+}
+
+tr {
+    background-color: lightyellow;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
 }

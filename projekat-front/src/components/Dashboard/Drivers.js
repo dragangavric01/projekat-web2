@@ -16,6 +16,7 @@ export default function Drivers() {
                 <div className="drivers-center">
                     <Header number={1} text="Drivers"/>
                     <br/>
+                    <br/>
                     <DriverTable drivers={drivers}/>
                 </div>
             </div>

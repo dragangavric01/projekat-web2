@@ -1,56 +1,52 @@
 import './MyRides.css';
 import Navigation from './Navigation';
 import Header from '../elements/Header/Header';
+import { getUsersRides } from '../../services/httpService';
+import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Text from '../elements/Text/Text';
+import { Common } from './Common';
 
 
 export default function MyRides() {
+    const navigate = useNavigate()
+
+    const [rides, setRides] = useState(null);
+
+    function checkResponse(result) {
+        if (result == 'error') {
+            // show error
+        } else if (result == 'token expired') {
+            navigate('/log-in');
+        } else if (result == null) {
+            // show error
+        }
+    }
+
+    useEffect(() => {
+        getUsersRides().then(result => {
+            checkResponse(result);
+            setRides(result);
+        });
+    }, []);
+
+    var component;
+    if (rides == null) {
+        component = <Text content={"You have no rides."}/>
+    } else {
+        component = <MyRidesTable/>
+    }
+
     return (
-        <div>
-            <Navigation/>
-            <div className="myrides">
-                <div className="myrides-center">
-                    <Header number={1} text="My rides"/>
-                    <br/>
-                    <MyRidesTable rides={rides}/>
-                </div>
-            </div>
-        </div>
+        <Common
+            headerText={"My rides"}
+
+            bottomComponent={component}
+
+            wide={true}
+        />
     );
 }
-
-
-const rides = [
-    {
-        startAddress: "Filipa Visnjica 21",
-        destinationAddress: "Gavrila Principa 43",
-        price: 5.33,
-        dateAndTime: "21.04.2024. 17:33"
-    }, 
-    {
-        startAddress: "Filipa Visnjica 21",
-        destinationAddress: "Gavrila Principa 43",
-        price: 5.33,
-        dateAndTime: "21.04.2024. 17:33"
-    }, 
-    {
-        startAddress: "Filipa Visnjica 21",
-        destinationAddress: "Gavrila Principa 43",
-        price: 5.33,
-        dateAndTime: "21.04.2024. 17:33"
-    }, 
-    {
-        startAddress: "Filipa Visnjica 21",
-        destinationAddress: "Gavrila Principa 43",
-        price: 5.33,
-        dateAndTime: "21.04.2024. 17:33"
-    }, 
-    {
-        startAddress: "Filipa Visnjica 21",
-        destinationAddress: "Gavrila Principa 43",
-        price: 5.33,
-        dateAndTime: "21.04.2024. 17:33"
-    }
-]
 
 function MyRidesTable({rides}) {
     const rows = [];

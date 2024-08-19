@@ -1,6 +1,6 @@
 import './Register.css';
 import Input, {InputType} from '../elements/Input/Input.js';
-import {HandlerButton, NavigationButton} from '../elements/Button/Button.js';
+import {ButtonSize, HandlerButton, NavigationButton} from '../elements/Button/Button.js';
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink.js';
 import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { register } from '../../services/httpService.js';
 import { setToken, setRole, getRoleFromToken, convertRoleToInt } from '../../services/globalStateService.js';
 import {User, UserRole} from '../../model/User.js'
+import { Common } from '../Dashboard/Common.js';
 
 export default function Register() {
     const navigate = useNavigate();
@@ -46,7 +47,7 @@ export default function Register() {
         if (token == 'error') {
             // show error
         } else if (token == 'token expired') {
-            navigate('/log-out');
+            navigate('/log-in');
         } else if (token == null) {
             // show error
         } else {
@@ -59,38 +60,39 @@ export default function Register() {
 
 
     return (
-        <div>
-            <Banner/>
-            <div className="register">
-                <div className="register-center">
-                    <div>
-                        <Header number={1} text={"Register"}/>
+        <Common
+            headerText={"Register"}
 
-                        <Hyperlink text="Click here to register with a facebook account" path="/register" size={HyperlinkSize.SMALL}/>
-                        
-                        <br/>
-                        <br/>
+            mainComponent={
+                <>
+                    <Input name="Email" type={InputType.TEXT} handleChangeFunction={handleEmailChange}/>
+                    <Input name="Password" type={InputType.PASSWORD} handleChangeFunction={handlePasswordChange}/>
+                    <Input name="Repeat password" type={InputType.PASSWORD} handleChangeFunction={handleRepeatedPasswordChange}/>
+                    <Input name="Role" type={InputType.DROPDOWN} dropdownOptions={["Client", "Driver"]} handleChangeFunction={handleUserRoleChange}/>
+                    <Input name="Username" type={InputType.TEXT} handleChangeFunction={handleUsernameChange}/>
+                    <Input name="First name" type={InputType.TEXT} handleChangeFunction={handleFirstNameChange}/>
+                    <Input name="Last name" type={InputType.TEXT} handleChangeFunction={handleLastNameChange}/>
+                    <Input name="Date of birth" type={InputType.DATE} handleChangeFunction={handleDateOfBirthChange}/>
+                    <Input name="Address" type={InputType.TEXT} handleChangeFunction={handleAddressChange}/>
+                    <Input name="Profile picture" type={InputType.PICTURE} handleChangeFunction={handlePictureChange}/>
+                </>
+            }
 
-                        <Input name="Email" type={InputType.TEXT} handleChangeFunction={handleEmailChange}/>
-                        <Input name="Password" type={InputType.PASSWORD} handleChangeFunction={handlePasswordChange}/>
-                        <Input name="Repeat password" type={InputType.PASSWORD} handleChangeFunction={handleRepeatedPasswordChange}/>
-                        <Input name="Role" type={InputType.DROPDOWN} dropdownOptions={["Client", "Driver"]} handleChangeFunction={handleUserRoleChange}/>
-                        <Input name="Username" type={InputType.TEXT} handleChangeFunction={handleUsernameChange}/>
-                        <Input name="First name" type={InputType.TEXT} handleChangeFunction={handleFirstNameChange}/>
-                        <Input name="Last name" type={InputType.TEXT} handleChangeFunction={handleLastNameChange}/>
-                        <Input name="Date of birth" type={InputType.DATE} handleChangeFunction={handleDateOfBirthChange}/>
-                        <Input name="Address" type={InputType.TEXT} handleChangeFunction={handleAddressChange}/>
-                        <Input name="Profile picture" type={InputType.PICTURE} handleChangeFunction={handlePictureChange}/>
+            bottomComponent={
+                <>
+                    <br/>
+                    <HandlerButton text="Register" size={ButtonSize.MEDIUM} handler={handleRegister}/>
+                    <br/>
+                    <br/>
+                    <Hyperlink text="Click here to register with a facebook account." path="/register" size={HyperlinkSize.SMALL}/>
+                    <br/>
+                    <br/>
+                    <Hyperlink text="Already have an account? Click here to log in." path="/log-in"  size={HyperlinkSize.SMALL}/>
+                </>
+            }
 
-                        <HandlerButton text="Register" handler={handleRegister}/>
-
-                        <br/>
-                        <br/>
-                        
-                        <Hyperlink text="Already have an account? Click here to log in" path="/log-in"  size={HyperlinkSize.SMALL}/>
-                    </div>
-                </div>
-            </div>
-        </div>
+            noNavigation={true}
+        />
     );
 }
+

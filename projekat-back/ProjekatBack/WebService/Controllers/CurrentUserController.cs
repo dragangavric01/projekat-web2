@@ -25,6 +25,7 @@ namespace WebService.Controllers
     [ApiController]
     public class CurrentUserController : ControllerBase {
         private readonly IUserService userServiceProxy = ServiceProxy.Create<IUserService>(new Uri("fabric:/ProjekatBack/UserService"));
+        TokenExtractor tokenExtractor = new TokenExtractor();
 
        [HttpPost("register")]
        public async Task<IActionResult> Register([FromForm] ProfileUploadDTO profileDTO) {
@@ -58,7 +59,7 @@ namespace WebService.Controllers
         [HttpGet("get-profile")]
         public async Task<IActionResult> GetProfile() {
             try {
-                ProfileDownloadDTO profileDTO = await userServiceProxy.GetUser(GetUsernameFromToken());
+                ProfileDownloadDTO profileDTO = await userServiceProxy.GetUser(tokenExtractor.GetUsernameFromToken(User));
                 return Ok(profileDTO);
             } catch {
                 return Problem(statusCode: 500);
@@ -69,7 +70,7 @@ namespace WebService.Controllers
         [Authorize]
         public async Task<IActionResult> Update([FromForm] ProfileUploadDTO profileDTO) {
             try {
-                User user = new User(ValueOrNull(profileDTO.Username), ValueOrNull(profileDTO.Email), ValueOrNull(profileDTO.Password), ValueOrNull(profileDTO.FirstName), ValueOrNull(profileDTO.LastName), ValueOrNull(profileDTO.DateOfBirth), ValueOrNull(profileDTO.Address), GetRoleFromToken());
+                User user = new User(ValueOrNull(profileDTO.Username), ValueOrNull(profileDTO.Email), ValueOrNull(profileDTO.Password), ValueOrNull(profileDTO.FirstName), ValueOrNull(profileDTO.LastName), ValueOrNull(profileDTO.DateOfBirth), ValueOrNull(profileDTO.Address), tokenExtractor.GetRoleFromToken(User));
 
                 byte[] picture;
 
@@ -82,28 +83,13 @@ namespace WebService.Controllers
                     picture = null;
                 }
                 
-                string result = await userServiceProxy.Update(GetUsernameFromToken(), user, picture);
+                string result = await userServiceProxy.Update(tokenExtractor.GetUsernameFromToken(User), user, picture);
                 return Ok(result);
             } catch {
                 return Problem(statusCode: 500);
             }
         }
 
-
-        private string GetUsernameFromToken() {
-            return User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
-        }
-
-        private UserRole GetRoleFromToken() {
-            string role = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-            if (role == "Client") {
-                return UserRole.Client;
-            } else if (role == "Driver") {
-                return UserRole.Driver;
-            } else { 
-                return UserRole.Admin;
-            }
-        }
 
         private string ValueOrNull(string value) {
             if (value == "null") {

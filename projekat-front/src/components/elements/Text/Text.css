@@ -3,4 +3,15 @@
     font-weight: 500;
     font-size: larger;
     display: inline;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.bold-text {
+    font-family: Arial;
+    font-weight: 600;
+    font-size: larger;
+    display: inline;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }

@@ -7,16 +7,18 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WebRideCommon.Model {
-    public enum RideStatus { Requested, Accepted, InProgress, Finished }
+    public enum RideStatus { Requested = 0, InProgress = 1, Finished = 2 }
 
     public class Ride : ITableEntity {
-        public string RideStartTime { get; set; }
+        public string CreationDateAndTime { get; set; }
         public string StartAddress { get; set; }
         public string DestinationAddress { get; set; }
         public double Price { get; set; }
         public string DriverUsername { get; set; }
         public string ClientUsername { get; set; }
         public RideStatus Status { get; set; }
+        public string WaitTime { get; set; }
+        public string Duration { get; set; }
         public int DriverRating { get; set; }
 
         public string PartitionKey { get; set; }
@@ -27,19 +29,20 @@ namespace WebRideCommon.Model {
 
         public Ride() { }
 
-        public Ride(string rideStartTime, string startAddress, string destinationAddress, double price, string driverUsername, string clientUsername, RideStatus status, int driverRating) {
-            RideStartTime = rideStartTime;
+        public Ride(string creationDateAndTime, string startAddress, string destinationAddress, double price, string driverUsername, string clientUsername, RideStatus status, string waitTime, string duration, int driverRating) {
+            CreationDateAndTime = creationDateAndTime;
             StartAddress = startAddress;
             DestinationAddress = destinationAddress;
             Price = price;
             DriverUsername = driverUsername;
             ClientUsername = clientUsername;
             Status = status;
+            WaitTime = waitTime;
+            Duration = duration;
             DriverRating = driverRating;
 
             PartitionKey = "RidePartition";
             RowKey = Guid.NewGuid().ToString();
-            DriverRating = driverRating;
         }
     }
 }
