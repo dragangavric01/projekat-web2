@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react';
 import Output from '../elements/Output/Output.js';
 import { RideStatus } from '../../model/Ride.js';
 import { UserRole } from '../../model/User.js';
-import { getRole, setIsRideActive } from '../../services/globalStateService.js';
+import { getRoleFromToken, getToken, setIsRideActive } from '../../services/globalStateService.js';
 import { Common } from './Common.js';
 
 
@@ -216,7 +216,7 @@ export function CurrentRide() {
     var component;
     if (!isCounterZero(durationCounter)) {
         component = <ShowCounter waitTimeCounter={waitTimeCounter} durationCounter={durationCounter}/>
-    } else if (getRole() == UserRole.CLIENT) {
+    } else if (getRoleFromToken(getToken()) == UserRole.CLIENT) {
         component = <RateDriver/>
     } else {
         component = <RideFinished/>

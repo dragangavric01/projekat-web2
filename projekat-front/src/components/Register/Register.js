@@ -52,7 +52,6 @@ export default function Register() {
             // show error
         } else {
             setToken(token);
-            setRole(getRoleFromToken(token))
 
             navigate('/dashboard');
         }

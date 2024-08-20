@@ -10,7 +10,7 @@ import {NewRides, CurrentRideDriver} from '../Dashboard/NewRides.js';
 import Rides from '../Dashboard/Rides.js';
 import Drivers, { Driver } from '../Dashboard/Drivers.js';
 import Dashboard from '../Dashboard/Dashboard.js';
-import { clearGlobalState, getIsRideActive, getRole, getToken, setRole } from '../../services/globalStateService.js';
+import { clearGlobalState, getIsRideActive, getRole, getRoleFromToken, getToken, setRole } from '../../services/globalStateService.js';
 import Text from '../elements/Text/Text.js';
 import { UserRole } from '../../model/User.js';
 import { useEffect } from 'react';
@@ -29,7 +29,7 @@ export default function App() {
                 <Route path='/dashboard/profile' element={<ProtectedRoute component={<Profile/>}/>}/>
                 <Route path='/dashboard/edit-profile' element={<ProtectedRoute component={<EditProfile/>}/>}/>
 
-                <Route path='/dashboard/my-rides' element={<ProtectedRoute component={<MyRides/>} requiredRole={UserRole.CLIENT} alternateRole={UserRole.Driver}/>}/>
+                <Route path='/dashboard/my-rides' element={<ProtectedRoute component={<MyRides/>} requiredRole={UserRole.CLIENT} alternateRole={UserRole.DRIVER}/>}/>
                 <Route path='/dashboard/rides' element={<ProtectedRoute component={<Rides/>} requiredRole={UserRole.ADMIN}/>}/>
 
                 <Route path='/dashboard/drivers' element={<ProtectedRoute component={<Rides/>} requiredRole={UserRole.ADMIN}/>}/>
@@ -45,7 +45,7 @@ export default function App() {
 
 
 function ProtectedRoute({component, requiredRole, alternateRole, rideActiveRestriction}) {
-    const role = getRole();
+    const role = getRoleFromToken(getToken());
 
     if (role == null) {
         return (<LogIn/>);

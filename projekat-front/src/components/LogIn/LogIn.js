@@ -39,7 +39,6 @@ export default function LogIn() {
             // show error
         } else {
             setToken(token);
-            setRole(getRoleFromToken(token))
 
             if (location.pathname == "/dashboard") {
                 window.location.reload();

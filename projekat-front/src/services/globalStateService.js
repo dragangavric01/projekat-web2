@@ -6,34 +6,21 @@ export function setToken(token) {
     localStorage.setItem('token', token);
 }
 
-export function setRole(role) {
-    localStorage.setItem('role', role);
-}
-
-export function setIsRideActive(isRideAcive) {
-    localStorage.setItem('isRideAcive', isRideAcive);
+export function setIsRideActive(isRideActive) {
+    localStorage.setItem('isRideActive', convertBooltoString(isRideActive));
 }
 
 export function getToken() {
     return localStorage.getItem('token');
 }
 
-export function getRole() {
-    var role = parseInt(localStorage.getItem('role'));
-    if (isNaN(role)) {
-        return null
-    }
-
-    return role;
-}
-
 export function getIsRideActive() {
-    const isRideAcive = localStorage.getItem('isRideAcive');
-    if (isRideAcive == null) {
+    const isRideActive = localStorage.getItem('isRideActive');
+    if (isRideActive == null) {
         return false;
     }
 
-    return isRideAcive;
+    return convertStringToBool(isRideActive);
 }
 
 export function clearGlobalState() {
@@ -42,6 +29,10 @@ export function clearGlobalState() {
 
 
 export function getRoleFromToken(token) {
+    if (token == null) {
+        return null;
+    }
+
     const decodedToken = jwtDecode(token);
     const role = decodedToken.role || decodedToken["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
 
@@ -66,5 +57,17 @@ export function convertRoleToInt(role) {
     } else {
         return UserRole.ADMIN;
     }
+}
+
+function convertBooltoString(bool) {
+    if (bool) {
+        return "true";
+    } else {
+        return "false";
+    }
+}
+
+function convertStringToBool(boolString) {
+    return (boolString == "true");
 }
 

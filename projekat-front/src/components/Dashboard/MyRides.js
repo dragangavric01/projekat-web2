@@ -34,7 +34,7 @@ export default function MyRides() {
     if (rides == null) {
         component = <Text content={"You have no rides."}/>
     } else {
-        component = <MyRidesTable/>
+        component = <MyRidesTable rides={rides}/>
     }
 
     return (
@@ -49,11 +49,27 @@ export default function MyRides() {
 }
 
 function MyRidesTable({rides}) {
-    const rows = [];
+    const [rows, setRows] = useState([]);
 
-    rides.forEach((ride) => {
-        rows.push(<MyRidesTableRow startAddress={ride.startAddress} destinationAddress={ride.destinationAddress} price={ride.price}  dateAndTime={ride.dateAndTime}/>);
-    });
+    useEffect(() => {
+        const rowsList = rides.map(ride => (
+            <MyRidesTableRow
+                startAddress={ride.startAddress}
+                destinationAddress={ride.destinationAddress}
+                price={ride.price}
+                dateAndTime={ride.creationDateAndTime}
+            />
+        ));
+        
+        setRows(rowsList);
+    }, [rides]);
+
+
+    if (rows.length == 0) {
+        return (
+            <Text content={"There are no new rides."}/>
+        );
+    } 
 
     return (
         <table>
@@ -70,10 +86,10 @@ function MyRidesTable({rides}) {
 function MyRidesTableHeader() {
     return (
         <tr>
-            <th>Start address</th>
-            <th>Destination address</th>
-            <th>Price</th>
-            <th>Date and time</th>
+            <th><p>Start address</p></th>
+            <th><p>Destination address</p></th>
+            <th><p>Price</p></th>
+            <th><p>Date and time</p></th>
         </tr>
     );
 }
@@ -81,10 +97,10 @@ function MyRidesTableHeader() {
 function MyRidesTableRow({startAddress, destinationAddress, price, dateAndTime}) {
     return (
         <tr>
-            <td>{startAddress}</td>
-            <td>{destinationAddress}</td>
-            <td>{price}</td>
-            <td>{dateAndTime}</td>
+            <td><p>{startAddress}</p></td>
+            <td><p>{destinationAddress}</p></td>
+            <td><p>{price}$</p></td>
+            <td><p>{dateAndTime}</p></td>
         </tr>
     );
 }

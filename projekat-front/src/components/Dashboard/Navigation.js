@@ -2,11 +2,11 @@ import './Navigation.css';
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink.js';
 import Banner from '../Banner/Banner.js';
 import {UserRole} from '../../model/User.js';
-import { getRole } from '../../services/globalStateService.js';
+import { getRoleFromToken, getToken } from '../../services/globalStateService.js';
 
 
 export default function Navigation() {
-    const role = getRole();
+    const role = getRoleFromToken(getToken());
 
     if (role == UserRole.CLIENT) {
         return (<ClientNavigation/>);

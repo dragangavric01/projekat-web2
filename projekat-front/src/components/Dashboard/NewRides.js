@@ -66,7 +66,7 @@ function NewRidesTable({requestedRides}) {
 
     if (rows.length == 0) {
         return (
-            <Text content={"There are no requested rides."}/>
+            <Text content={"There are no new rides."}/>
         );
     } 
 

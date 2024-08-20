@@ -7,7 +7,7 @@ import Hyperlink, {HyperlinkSize, HandlerHyperlink} from '../elements/Hyperlink/
 import { useLocation, useNavigate } from 'react-router-dom';
 import Header from '../elements/Header/Header.js'
 import { useContext, useEffect } from 'react';
-import { clearGlobalState, getRole } from '../../services/globalStateService.js';
+import { clearGlobalState, getToken } from '../../services/globalStateService.js';
 import {UserRole} from '../../model/User.js'
 import { useState } from 'react';
 import { setToken, setRole, getRoleFromToken, convertRoleToInt } from '../../services/globalStateService.js';
@@ -47,7 +47,7 @@ export function EditProfile() {
             lastName: lastName,
             dateOfBirth: dateOfBirth,
             address: address,
-            role: getRole(),    //////////////////////////
+            role: getRoleFromToken(getToken()),    //////////////////////////
             picture: picture
         }
 
