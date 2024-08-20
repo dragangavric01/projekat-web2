@@ -15,5 +15,7 @@ namespace WebUserCommon {
         Task<string> LogIn(string email, string password);
         Task<ProfileDownloadDTO> GetUser(string username);
         Task<string> Update(string username, User user, byte[] picture);
+        Task<List<DriverDataDTO>> GetDrivers();
+        Task<DriverDTO> GetDriver(string driverUsername);
     }
 }

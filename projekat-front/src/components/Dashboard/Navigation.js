@@ -24,10 +24,10 @@ function ClientNavigation() {
             <Banner/>
             <div className="navbar">
                 <ul>
-                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/new-ride" text="New ride" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/new-ride" text="New ride" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.SMALL}/></li>
                 </ul>
             </div>
         </div>
@@ -40,10 +40,10 @@ function DriverNavigation() {
             <Banner/>
             <div className="navbar">
                 <ul>
-                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/new-rides" text="New rides" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/my-rides" text="My rides" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/new-rides" text="New rides" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.SMALL}/></li>
                 </ul>
             </div>
         </div>
@@ -56,10 +56,10 @@ function AdminNavigation() {
             <Banner/>
             <div className="navbar">
                 <ul>
-                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/rides" text="Rides" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/dashboard/drivers" text="Drivers" size={HyperlinkSize.MEDIUM}/></li>
-                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.MEDIUM}/></li>
+                    <li><Hyperlink path="/dashboard/profile" text="Profile" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/rides" text="Rides" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/dashboard/drivers" text="Drivers" size={HyperlinkSize.SMALL}/></li>
+                    <li><Hyperlink path="/log-in" text="Log out" size={HyperlinkSize.SMALL}/></li>
                 </ul>
             </div>
         </div>

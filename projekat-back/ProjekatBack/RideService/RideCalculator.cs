@@ -10,7 +10,7 @@ namespace RideService {
         Random random = new Random();
 
         public double GetRidePrice(string startAddress, string destinationAddress) {
-            return GetRandomDouble(3, 15);
+            return Math.Round(GetRandomDouble(3, 15), 2);
         }
 
         public Period GetRideWaitTime(string startAddress, string destinationAddress) {

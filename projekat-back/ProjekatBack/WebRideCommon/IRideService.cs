@@ -18,5 +18,7 @@ namespace RideService {
         Task<AcceptRideDTO> AcceptRide(string driverUsername, string rideRowKey);
         Task RateDriver(string clientUsername, int rating);
         Task<List<UsersRideDTO>> GetUsersRides(string username);
+        Task<List<RideDTO>> GetRides();
+        Task<double> GetDriversAverageRating(string driverUsername);
     }
 }

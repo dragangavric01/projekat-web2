@@ -18,7 +18,7 @@
 
 .navbar a {
     display: block;
-    color: lightyellow;
+    color:  rgb(255, 243, 196);
     text-align: center;
     padding: 14px 50px;
     text-decoration: none;
@@ -27,6 +27,6 @@
 }
 
 .navbar a:hover {
-    background-color: #ffffbd;
+    background-color:rgb(255, 243, 196);
     color: #333;
 }

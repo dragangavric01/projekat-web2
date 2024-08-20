@@ -40,5 +40,27 @@ namespace WebService.Controllers {
                 return Problem(statusCode: 500);
             }
         }
+
+        [HttpGet("get-rides")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetRides() {
+            try {
+                List<RideDTO> rides = await rideServiceProxy.GetRides();
+                return Ok(rides);
+            } catch {
+                return Problem(statusCode: 500);
+            }
+        }
+
+        [HttpPost("get-drivers-average-rating")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetDriversAverageRating([FromBody] string driversUsername) {
+            try {
+                double result = await rideServiceProxy.GetDriversAverageRating(driversUsername);
+                return Ok(result);
+            } catch {
+                return Problem(statusCode: 500);
+            }
+        }
     }
 }

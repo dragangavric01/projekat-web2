@@ -6,7 +6,7 @@
     height: 40px;
     cursor: pointer;
     margin: 10px;
-    background-color:lightyellow;
+    background-color:rgb(255, 243, 196);
     border-radius: 10px;
 }
 
@@ -18,7 +18,7 @@
     height: 40px;
     cursor: pointer;
     margin: 10px;
-    background-color:lightyellow;
+    background-color:rgb(255, 243, 196);
     border-radius: 10px;
 }
 
@@ -30,6 +30,6 @@
     height: 40px;
     cursor: pointer;
     margin: 10px;
-    background-color:lightyellow;
+    background-color:rgb(255, 243, 196);
     border-radius: 10px;
 }

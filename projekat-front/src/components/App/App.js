@@ -32,8 +32,8 @@ export default function App() {
                 <Route path='/dashboard/my-rides' element={<ProtectedRoute component={<MyRides/>} requiredRole={UserRole.CLIENT} alternateRole={UserRole.DRIVER}/>}/>
                 <Route path='/dashboard/rides' element={<ProtectedRoute component={<Rides/>} requiredRole={UserRole.ADMIN}/>}/>
 
-                <Route path='/dashboard/drivers' element={<ProtectedRoute component={<Rides/>} requiredRole={UserRole.ADMIN}/>}/>
-                <Route path='/dashboard/:driverUsername' element={<ProtectedRoute component={<Driver/>} requiredRole={UserRole.ADMIN}/>}/>
+                <Route path='/dashboard/drivers' element={<ProtectedRoute component={<Drivers/>} requiredRole={UserRole.ADMIN}/>}/>
+                <Route path='/dashboard/drivers/:driverUsername' element={<ProtectedRoute component={<Driver/>} requiredRole={UserRole.ADMIN}/>}/>
 
                 <Route path='/dashboard/new-ride' element={<ProtectedRoute component={<NewRide/>} requiredRole={UserRole.CLIENT}/>}/>
                 <Route path='/dashboard/new-rides' element={<ProtectedRoute component={<NewRides/>} requiredRole={UserRole.DRIVER}/>}/>

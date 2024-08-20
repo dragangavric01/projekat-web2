@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { acceptRide, getRequestedRides } from '../../services/httpService';
 import { setIsRideActive } from '../../services/globalStateService';
-import { Common } from './Common';
+import { Common, CommonWidth } from './Common';
 
 
 export function NewRides() {
@@ -41,13 +41,13 @@ export function NewRides() {
 
             bottomComponent={<NewRidesTable requestedRides={requestedRides}/>}
 
-            wide={true}
+            width={CommonWidth.WIDE}
         />
     );
 }
 
 function NewRidesTable({requestedRides}) {
-    const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState(null);
 
     useEffect(() => {
         const rowsList = requestedRides.map(ride => (
@@ -63,6 +63,10 @@ function NewRidesTable({requestedRides}) {
         setRows(rowsList);
     }, [requestedRides]);
 
+    
+    if (rows == null) {
+        return (<br/>);
+    }
 
     if (rows.length == 0) {
         return (

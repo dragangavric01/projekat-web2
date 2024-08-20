@@ -43,9 +43,15 @@ export default function Hyperlink({text, path, size, textColor, state}) {
     } 
 }
 
-export function HyperlinkHandler({text, handlerFunction}) {
-    return (
-        <a className='hyperlink-handler'  onClick={handlerFunction}>{text}</a>
-    );
+export function HyperlinkHandler({text, handlerFunction, textColor}) {
+    if (textColor == null) {
+        return (
+            <a className='hyperlink-handler'  onClick={handlerFunction}>{text}</a>
+        );
+    } else {
+        return (
+            <a className='hyperlink-handler'  onClick={handlerFunction} style={{color:textColor}}>{text}</a>
+        );
+    }
 }
 

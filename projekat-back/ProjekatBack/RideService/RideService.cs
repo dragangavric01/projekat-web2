@@ -130,6 +130,17 @@ namespace RideService
             return usersRideDTOs;
         }
 
+        public async Task<List<RideDTO>> GetRides() {
+            List<Ride> rides = rideStorageManager.ReadRides();
+
+            List<RideDTO> rideDTOs = new List<RideDTO>();
+            foreach (Ride ride in rides) {
+                rideDTOs.Add(new RideDTO(ride));
+            }
+
+            return rideDTOs;
+        }
+
 
         private async void DeleteOrderedRideStateAfter5Min(string clientUsername) {
             await Task.Delay(new Period(5, 0).ToMilliseconds());
@@ -148,6 +159,20 @@ namespace RideService
                 await confirmedRideStateManager.DeleteState(clientUsername);
             }
         }
+
+        public async Task<double> GetDriversAverageRating(string driverUsername) {
+            List<Ride> usersRides = rideStorageManager.ReadUsersRides(driverUsername);
+
+            int ratingSum = 0;
+            foreach (Ride ride in usersRides) {
+                if (ride.DriverRating != -1) {
+                    ratingSum += ride.DriverRating;
+                }
+            }
+
+            return Math.Round((double)ratingSum / (double)usersRides.Count, 2);
+        }
+
 
 
 

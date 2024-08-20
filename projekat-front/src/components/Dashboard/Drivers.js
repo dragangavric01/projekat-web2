@@ -1,143 +1,85 @@
 import Header from '../elements/Header/Header';
-import Hyperlink from '../elements/Hyperlink/Hyperlink';
+import Hyperlink, { HyperlinkHandler } from '../elements/Hyperlink/Hyperlink';
 import {ShowRating} from '../elements/StarRating/StarRating';
 import Navigation from './Navigation';
 import Text from '../elements/Text/Text';
 import './Drivers.css';
-import {NavigationButton} from '../elements/Button/Button';
-import { useParams } from 'react-router-dom';
+import {HandlerButton, NavigationButton} from '../elements/Button/Button';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getDriver, getDrivers, getDriversAverageRating } from '../../services/httpService';
+import { Common, CommonWidth } from './Common';
+import { useEffect, useState } from 'react';
+import {RegistrationRequestStatus} from '../../model/DriverData'
+import Output from '../elements/Output/Output';
 
 
 export default function Drivers() {
-    return (
-        <div>
-            <Navigation/>
-            <div className="drivers">
-                <div className="drivers-center">
-                    <Header number={1} text="Drivers"/>
-                    <br/>
-                    <br/>
-                    <DriverTable drivers={drivers}/>
-                </div>
-            </div>
-        </div>
-    );
-}
+    const navigate = useNavigate();
+    const [drivers, setDrivers] = useState([]);
 
-export function Driver() {
-    const {driverUsername} = useParams();
-
-    var thisDriver;
-    for (var driver of drivers) {
-        if (driver.username == driverUsername) {
-            thisDriver = driver;
-            break;
+    async function getAndSetDrivers() {
+        const result = await getDrivers();
+        if (result == 'error') {
+            // show error
+        } else if (result == 'token expired') {
+            navigate('/log-in');
+        } else if (result == null) {
+            // error
         }
+
+        setDrivers(result);
     }
 
-    return (
-        <div>
-            <Navigation/>
-            <div className="driver">
-                <div className="driver-center">
-                    <DriverData driver={thisDriver}/>
-                    
-                    <br/>
+    useEffect(() => {
+        getAndSetDrivers();
 
-                    <p>Treba i profile picture</p>
-                </div>
-            </div>
-        </div>
+        const intervalId = setInterval(getAndSetDrivers, 10000);
+
+        return () => clearInterval(intervalId);    
+    }, []);
+
+
+    return (
+        <Common
+            headerText={"Drivers"}
+
+            bottomComponent={<DriversTable drivers={drivers}/>}
+
+            width={CommonWidth.NORMAL}
+        />
     );
 }
 
+function DriversTable({drivers}) {
+    const [rows, setRows] = useState(null);
 
-const drivers = [
-    {
-        username: "driver1",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: false,
-        averageRating: 4
-    }, 
-    {
-        username: "driver2",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: true,
-        averageRating: 4
-    }, 
-    {
-        username: "driver3",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: false,
-        averageRating: 1
-    }, 
-    {
-        username: "driver4",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: true,
-        averageRating: 4
-    }, 
-    {
-        username: "driver5",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: false,
-        averageRating: 2
-    }, 
-    {
-        username: "driver6",
-        email: "asdasdsada",
-        password: "asdasdsada",
-        firstName: "asdasdsada",
-        lastName: "asdasdsada",
-        dateofBirth: "asdasdsada",
-        address: "asdasdsada",
-        registrationRequestStatus: "Pending",
-        isBlocked: true,
-        averageRating: 4
+    useEffect(() => {
+        const rowsList = drivers.map(driver => (
+            <DriversTableRow
+                username={driver.username}
+                registrationRequestStatus={registrationRequestStatusToString(driver.registrationRequestStatus)}
+                isBlocked={driver.blocked}
+            />
+        ));
+        
+        setRows(rowsList);
+    }, [drivers]);
+
+
+    if (rows == null) {
+        return (<br/>);
     }
-]
 
-function DriverTable({drivers}) {
-    const rows = [];
-
-    drivers.forEach((driver) => {
-        rows.push(<DriverTableRow username={driver.username} registrationRequestStatus={driver.registrationRequestStatus} isBlocked={driver.isBlocked} averageRating={driver.averageRating}/>);
-    });
+    if (rows.length == 0) {
+        return (
+            <Text content={"There are no drivers."}/>
+        );
+    } 
 
     return (
         <table>
             <thead>
-                <DriverTableHeader/>
+                <DriversTableHeader/>
             </thead>
             <tbody>
                 {rows}
@@ -146,84 +88,156 @@ function DriverTable({drivers}) {
     );
 }
 
-function DriverTableHeader() {
+function DriversTableHeader() {
     return (
         <tr>
-            <th>Driver</th>
-            <th>Registration request</th>
-            <th>Average rating</th>
+            <th><p>Driver</p></th>
+            <th><p>Registration request status</p></th>
         </tr>
     );
 }
 
-function DriverTableRow({username, registrationRequestStatus, isBlocked, averageRating}) {
+function DriversTableRow({username, registrationRequestStatus, isBlocked}) {
     return (
         <tr>
-            <td><Hyperlink text={username} textColor={isBlocked ? "darkred" : "black"} path={"/dashboard/" + username}/></td>
-            <td>{registrationRequestStatus}</td>
-            <td><ShowRating rating={averageRating}/></td>
+            <td><Hyperlink text={username} path={'/dashboard/drivers/' + username}/></td>
+            <td><p>{registrationRequestStatus}</p></td>
         </tr>
     );
 }
 
 
+export function Driver() {
+    const {driverUsername} = useParams();
+    const navigate = useNavigate();
 
-function DriverData({driver}) {
-    var registrationRequestStatusButtons;
-    if (driver.registrationRequestStatus == "Pending") {
-        registrationRequestStatusButtons = <><NavigationButton text={"Accept"}/><NavigationButton text={"Decline"}/></>
-    } else {
-        registrationRequestStatusButtons = null;
+    const [driver, setDriver] = useState(null);
+    const [averageRating, setAverageRating] = useState(null);
+
+    function checkResponse(result) {
+        if (result == 'error') {
+            // show error
+        } else if (result == 'token expired') {
+            navigate('/log-in');
+        } else if (result == null) {
+            // show error
+        }
     }
 
-    var blockStatusButtons;
+    useEffect(() => {
+        getDriver(driverUsername).then(result => {
+            checkResponse(result);
+            setDriver(result);
+        });
+
+        getDriversAverageRating(driverUsername).then(result => {
+            checkResponse(result);
+            setAverageRating(result);
+        });
+    }, []);
+
+    function handleAccept() {
+
+    }
+
+    function handleDeny() {
+
+    }
+
+    function handleBlock() {
+
+    }
+
+    function handleUnblock() {
+
+    }
+
+
+    if (driver == null || averageRating == null) return(
+        <Navigation/>
+    );
+
+    var registrationRequestButtons;
+    if (driver.registrationRequestStatus == RegistrationRequestStatus.PENDING) {
+        registrationRequestButtons = 
+            <>
+                <HandlerButton text={"Accept"} handler={handleAccept}/>
+                <HandlerButton text={"Deny"} handler={handleDeny}/>
+            </>
+    } else {
+        registrationRequestButtons = null;
+    }
+
+    var blockingSection;
     if (driver.isBlocked) {
-        blockStatusButtons = <NavigationButton text={"Unblock"}/>
+        blockingSection = 
+            <>
+                <Text content={"Driver is blocked."}/>
+                <HandlerButton text={"Unblock"} handler={handleUnblock}/>
+            </>
     } else {
-        blockStatusButtons = <NavigationButton text={"Block"}/>
+        blockingSection = 
+            <>
+                <Text content={"Driver is not blocked."}/>
+                <HandlerButton text={"Block"} handler={handleBlock}/>
+            </>
     }
 
-    return (
+
+    return(
         <div>
-            <DriverField name={"Email:"} value={driver.email}/>
-            <br/>
-            <DriverField name={"Username:"} value={driver.username}/>
-            <br/>
-            <DriverField name={"Password:"} value={driver.password}/>
-            <br/>
-            <DriverField name={"First name:"} value={driver.firstName}/>
-            <br/>
-            <DriverField name={"Last name:"} value={driver.lastName}/>
-            <br/>
-            <DriverField name={"Date of birth:"} value={driver.dateofBirth}/>
-            <br/>
-            <DriverField name={"Address:"} value={driver.address}/>
-            
-            <br/>
-            <br/>
+            <Navigation/>
+            <div className='driver-profile'>
+                <div class="driver-profile-container">
+                    <div class="driver-profile-picture">
+                        <img src={"data:image/jpeg;base64," + driver.picture}  alt='No picture'/>
+                    </div>
+                    <div class="driver-profile-info">
+                        <Header number={1} text="Driver's data"/>
 
-            <Text content={"Average rating:"}/>
-            <ShowRating rating={driver.averageRating}/>
+                        <br/>
+                        <br/>
 
-            <br/>
-            <br/>
+                        <Output name={"Username"} value={driver.username}  />
+                        <Output name={"Email"} value={driver.email} />
+                        <Output name={"First name"} value={driver.firstName} />
+                        <Output name={"Last name"} value={driver.lastName} />
+                        <Output name={"Date of birth"} value={driver.dateOfBirth}/>
+                        <Output name={"Address"} value={driver.address} />     
 
-            <DriverField name={"Registration request status:"} value={driver.registrationRequestStatus}/>
-            {registrationRequestStatusButtons}
+                        {averageRating != 0 && <>
+                                <br/>
+                                <Output name={"Average rating"} value={averageRating}/>
+                            </>
+                        }
 
-            <br/>
+                        <br/>
+                        <br/>
 
-            <DriverField name={"Block status:"} value={driver.isBlocked ? "Blocked" : "Not blocked"}/>
-            {blockStatusButtons}
+                        <Output name={"Registration request status"} value={registrationRequestStatusToString(driver.registrationRequestStatus)} noPadding={true}/>
+                        {registrationRequestButtons}
+
+                        <br/>
+                        <br/>
+                        <br/>
+
+                        {blockingSection}
+
+                        <br/>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }
 
-function DriverField({name, value}) {
-    return (
-        <div style={{marginBottom:'20px', display:"inline"}}>
-            <Text content={name} />
-            <Text content={value}/>
-        </div>
-    );
+
+function registrationRequestStatusToString(registrationRequestStatus) {
+    if (registrationRequestStatus == RegistrationRequestStatus.ACCEPTED) {
+        return "Accepted";
+    } else if (registrationRequestStatus == RegistrationRequestStatus.PENDING) {
+        return "Pending";
+    } else {
+        return "Denied"
+    }
 }

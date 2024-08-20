@@ -110,26 +110,6 @@ export const getCurrentUser = async () => {
     }
 };
 
-export const getDrivers = async () => {
-    try {
-        const response = await getAxios().get('/users/get-drivers');
-        return response.data;
-    } catch (error) {
-        console.error('Error: ', error);
-        return getError(error);
-    }
-};
-
-export const getRides = async () => {
-    try {
-        const response = await getAxios().get('/rides/get-rides');
-        return response.data;
-    } catch (error) {
-        console.error('Error: ', error);
-        return getError(error);
-    }
-};
-
 export const orderRide = async (addresses) => {
     try {
         const response = await getAxios().post('/current-ride/order-ride', addresses);
@@ -209,3 +189,45 @@ export const getUsersRides = async () => {
         return getError();
     }
 };
+
+export const getRides = async () => {
+    try {
+        const response = await getAxios().get('/rides/get-rides');
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError();
+    }
+};
+
+export const getDrivers = async () => {
+    try {
+        const response = await getAxios().get('/users/get-drivers');
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const getDriver = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/users/get-driver', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const getDriversAverageRating = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/rides/get-drivers-average-rating', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+

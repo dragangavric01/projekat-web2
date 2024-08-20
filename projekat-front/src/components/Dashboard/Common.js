@@ -4,12 +4,20 @@ import './Common.css';
 import Navigation from './Navigation';
 
 
-export function Common({headerText, mainComponent, bottomComponent, noNavigation, wide}) {
+export const CommonWidth = {
+    NORMAL: 0,
+    WIDE: 1,
+    EXTRAWIDE: 2
+}
+
+export function Common({headerText, mainComponent, bottomComponent, noNavigation, width}) {
     var rectangleClass;
-    if (wide) {
+    if (width == null || width == CommonWidth.NORMAL) {
+        rectangleClass = "rectangle";
+    } else if (width == CommonWidth.WIDE) {
         rectangleClass = "rectangle-wide";
     } else {
-        rectangleClass = "rectangle";
+        rectangleClass = "rectangle-extra-wide";
     }
 
     var topComponent;

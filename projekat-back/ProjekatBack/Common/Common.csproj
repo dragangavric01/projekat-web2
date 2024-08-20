@@ -8,8 +8,4 @@
     <PackageReference Include="Microsoft.ServiceFabric.Services.Remoting" Version="7.1.2338" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTO\" />
-  </ItemGroup>
-
 </Project>

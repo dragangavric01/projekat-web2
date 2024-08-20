@@ -47,9 +47,17 @@ namespace RideService.Storage {
             }
         }
 
+        public List<Ride> ReadRides() {
+            try {
+                Pageable<Ride> queryResults = tableClient.Query<Ride>();
+                return queryResults.AsEnumerable().ToList();
+            } catch (Exception) {
+                return null;
+            }
+        }
+
         public List<Ride> ReadRequestedRides() {
             try {
-                //Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: ride => ride.Status == RideStatus.Requested);
                 Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: $"Status eq '{RideStatus.Requested.ToString()}'");
                 return queryResults.AsEnumerable().ToList();
             } catch (Exception ex) {

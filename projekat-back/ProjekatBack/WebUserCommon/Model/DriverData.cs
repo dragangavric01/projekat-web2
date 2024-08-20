@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace UserService.Storage {
-    public enum RegistrationRequestStatus { Pending, Accepted, Denied }
+    public enum RegistrationRequestStatus { Pending = 0, Accepted = 1, Denied = 2}
 
     public class DriverData : ITableEntity {
         public string Username { get; set; }

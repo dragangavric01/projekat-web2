@@ -46,6 +46,13 @@
     text-decoration: underline;
 }
 
+.hyperlink-handler-nocolor {
+    font-family: Arial;
+    font-weight: 500;
+    font-size: 20px;
+    text-decoration: underline;
+}
+
 .hyperlink-handler:hover {
     cursor: pointer;
 }

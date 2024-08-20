@@ -20,7 +20,7 @@ namespace UserService.Storage {
             tableClient.CreateIfNotExists();
         }
 
-        public bool Create(DriverData driverData) {
+        public bool CreateDriverData(DriverData driverData) {
             try {
                 tableClient.AddEntity(driverData);
             } catch (Exception) {
@@ -28,6 +28,24 @@ namespace UserService.Storage {
             }
 
             return true;
+        }
+
+        public DriverData ReadDriverData(string driverUsername) {
+            try {
+                Pageable<DriverData> queryResults = tableClient.Query<DriverData>(filter: driverData => driverData.Username == driverUsername);
+                return queryResults.First();
+            } catch (Exception) {
+                return null;
+            }
+        }
+
+        public List<DriverData> ReadDriverDatas() {
+            try {
+                Pageable<DriverData> queryResults = tableClient.Query<DriverData>();
+                return queryResults.AsEnumerable().ToList();
+            } catch (Exception) {
+                return null;
+            }
         }
     }
 }

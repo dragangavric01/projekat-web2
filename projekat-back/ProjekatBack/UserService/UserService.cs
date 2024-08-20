@@ -44,7 +44,7 @@ namespace UserService
             }
 
             if (user.Role == UserRole.Driver) {
-                if (!driverDataStorageManager.Create(new DriverData(user.Username, RegistrationRequestStatus.Pending, false))) {
+                if (!driverDataStorageManager.CreateDriverData(new DriverData(user.Username, RegistrationRequestStatus.Pending, false))) {
                     return null;
                 }
             }
@@ -93,7 +93,30 @@ namespace UserService
                 return "";
             }
         }
+        
+        public async Task<List<DriverDataDTO>> GetDrivers() {
+            List<DriverData> driverDatas = driverDataStorageManager.ReadDriverDatas();
 
+            List<DriverDataDTO> driverDataDTOs = new List<DriverDataDTO>();
+            foreach (DriverData driverData in driverDatas) {
+                driverDataDTOs.Add(new DriverDataDTO(driverData));
+            }
+
+            return driverDataDTOs;
+        }
+
+        public async Task<DriverDTO> GetDriver(string driverUsername) {
+            User user = userStorageManager.ReadUser(driverUsername);
+            if (user == null) {
+                return null;
+            }
+
+            byte[] picture = userStorageManager.ReadPictureBlob(driverUsername);
+
+            DriverData driverData = driverDataStorageManager.ReadDriverData(driverUsername);
+
+            return new DriverDTO(user, Convert.ToBase64String(picture), driverData);
+        }
 
 
         /// <summary>

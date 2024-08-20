@@ -15,7 +15,7 @@ import Output from '../elements/Output/Output.js';
 
 
 export default function Profile() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
 
@@ -53,8 +53,11 @@ export default function Profile() {
 
                         <NavigationButton text={"Edit profile"} navigateTo={"/dashboard/edit-profile"} state={user} size={ButtonSize.MEDIUM}/>
 
-                        <Output name={"Email"} value={user.email} />
+                        <br/>
+                        <br/>
+
                         <Output name={"Username"} value={user.username}  />
+                        <Output name={"Email"} value={user.email} />
                         <Output name={"First name"} value={user.firstName} />
                         <Output name={"Last name"} value={user.lastName} />
                         <Output name={"Date of birth"} value={user.dateOfBirth}/>

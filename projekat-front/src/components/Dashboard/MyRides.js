@@ -5,7 +5,7 @@ import { getUsersRides } from '../../services/httpService';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Text from '../elements/Text/Text';
-import { Common } from './Common';
+import { Common, CommonWidth } from './Common';
 
 
 export default function MyRides() {
@@ -43,13 +43,13 @@ export default function MyRides() {
 
             bottomComponent={component}
 
-            wide={true}
+            width={CommonWidth.WIDE}
         />
     );
 }
 
 function MyRidesTable({rides}) {
-    const [rows, setRows] = useState([]);
+    const [rows, setRows] = useState(null);
 
     useEffect(() => {
         const rowsList = rides.map(ride => (
@@ -65,9 +65,13 @@ function MyRidesTable({rides}) {
     }, [rides]);
 
 
+    if (rows == null) {
+        return (<br/>);
+    }
+
     if (rows.length == 0) {
         return (
-            <Text content={"There are no new rides."}/>
+            <Text content={"There are no rides."}/>
         );
     } 
 
@@ -100,7 +104,7 @@ function MyRidesTableRow({startAddress, destinationAddress, price, dateAndTime})
             <td><p>{startAddress}</p></td>
             <td><p>{destinationAddress}</p></td>
             <td><p>{price}$</p></td>
-            <td><p>{dateAndTime}</p></td>
+            <td style={{maxWidth: '240px'}}><p>{dateAndTime}</p></td>
         </tr>
     );
 }
