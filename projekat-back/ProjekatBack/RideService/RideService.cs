@@ -13,6 +13,7 @@ using WebRideCommon.DTO;
 using RideService.State;
 using WebRideCommon.Model;
 using RideService.Storage;
+using Common;
 
 namespace RideService
 {
@@ -32,147 +33,202 @@ namespace RideService
             rideStorageManager = new RideStorageManager();
         }
 
-        public async Task<OrderRideReturnDTO> OrderRide(string clientUsername, string startAddress, string destinationAddress) {
-            OrderRideReturnDTO orderRideReturnDTO = new OrderRideReturnDTO(rideCalculator.GetRidePrice(startAddress, destinationAddress), rideCalculator.GetRideWaitTime(startAddress, destinationAddress));
+        public async Task<Result<OrderRideReturnDTO>> OrderRide(string clientUsername, string startAddress, string destinationAddress) {
+            try {
+                OrderRideReturnDTO orderRideReturnDTO = new OrderRideReturnDTO(rideCalculator.GetRidePrice(startAddress, destinationAddress), rideCalculator.GetRideWaitTime(startAddress, destinationAddress));
 
-            await orderedRideStateManager.CreateState(clientUsername, new OrderedRide(startAddress, destinationAddress, orderRideReturnDTO.Price, orderRideReturnDTO.WaitTime));
+                // Delete the state if it the user has ordered a ride before this one but hasn't confirmed it nor canceled it
+                if (await orderedRideStateManager.ReadState(clientUsername) != null) {
+                    await orderedRideStateManager.DeleteState(clientUsername);  
+                }
+                await orderedRideStateManager.CreateState(clientUsername, new OrderedRide(startAddress, destinationAddress, orderRideReturnDTO.Price, orderRideReturnDTO.WaitTime));
 
-            Task.Run(() => DeleteOrderedRideStateAfter5Min(clientUsername));
+                Task.Run(() => DeleteOrderedRideStateAfter5Min(clientUsername));
 
-            return orderRideReturnDTO;
+                return new Result<OrderRideReturnDTO>(orderRideReturnDTO, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<OrderRideReturnDTO>(ResultMetadata.Exception);
+            }
         }
 
-        public async Task<Period> ConfirmRide(string clientUsername) {
-            OrderedRide orderedRide = await orderedRideStateManager.ReadState(clientUsername);
-            if (orderedRide == null) {
-                return null;
-            }
-            await orderedRideStateManager.DeleteState(clientUsername);
+        public async Task<Result<Period>> ConfirmRide(string clientUsername) {
+            try {
+                OrderedRide orderedRide = await orderedRideStateManager.ReadState(clientUsername);
 
-            Period duration = rideCalculator.GetRideDuration(orderedRide.StartAddress, orderedRide.DestinationAddress);
-
-            Ride ride = new Ride(DateTime.Now.ToString(), orderedRide.StartAddress, orderedRide.DestinationAddress, orderedRide.Price, "", clientUsername, RideStatus.Requested, orderedRide.WaitTime.ToString(), duration.ToString(), -1);
-            string rideRowKey = rideStorageManager.CreateRide(ride);
-            if (rideRowKey == null) {
-                return null;
-            }
-
-            await confirmedRideStateManager.CreateState(clientUsername, rideRowKey);
-
-            return duration;
-        }
-
-        public async Task CancelRide(string clientUsername) {
-            if (await orderedRideStateManager.ReadState(clientUsername) != null) {
                 await orderedRideStateManager.DeleteState(clientUsername);
+
+                Period duration = rideCalculator.GetRideDuration(orderedRide.StartAddress, orderedRide.DestinationAddress);
+
+                Ride ride = new Ride(DateTime.Now.ToString(), orderedRide.StartAddress, orderedRide.DestinationAddress, orderedRide.Price, "", clientUsername, RideStatus.Requested, orderedRide.WaitTime.ToString(), duration.ToString(), -1);
+                string rideRowKey = rideStorageManager.CreateRide(ride);
+
+
+                if (await confirmedRideStateManager.ReadState(clientUsername) != null) {
+                    await confirmedRideStateManager.DeleteState(clientUsername);
+                }
+                await confirmedRideStateManager.CreateState(clientUsername, rideRowKey);
+
+                return new Result<Period>(duration, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<Period>(ResultMetadata.Exception);
             }
         }
 
-        public async Task<RideStatus?> GetRideStatus(string clientUsername) {
-            string rideRowKey = await confirmedRideStateManager.ReadState(clientUsername);
+        public async Task<ResultMetadata> CancelRide(string clientUsername) {
+            try {
+                if (await orderedRideStateManager.ReadState(clientUsername) != null) {
+                    await orderedRideStateManager.DeleteState(clientUsername);
+                }
 
-            Ride ride = rideStorageManager.ReadRide(rideRowKey);
-
-            if (ride == null) {
-                return null;
-            } 
-
-            return ride.Status;
-        }
-
-        public async Task<List<RequestedRideDTO>> GetRequestedRides() {
-            List<Ride> requestedRides = rideStorageManager.ReadRequestedRides();
-
-            List<RequestedRideDTO> requestedRideDTOs = new List<RequestedRideDTO>();
-            foreach (Ride ride in requestedRides) {
-                requestedRideDTOs.Add(new RequestedRideDTO(ride));
-            }
-
-            return requestedRideDTOs;
-        }
-
-        public async Task<AcceptRideDTO> AcceptRide(string driverUsername, string rideRowKey) {
-            Ride ride = rideStorageManager.ReadRide(rideRowKey);
-            Period waitTime = new Period(ride.WaitTime);
-            Period rideDuration = new Period(ride.Duration);
-
-            if (ride.Status == RideStatus.InProgress) {  // if some other driver has already accepted it 
-                return null;
-            }
-
-            if (!rideStorageManager.UpdateRideStatusAndDriverUsername(rideRowKey, RideStatus.InProgress, driverUsername)) {
-                return null;
-            }
-
-            Task.Run(() => Cleanup(ride.ClientUsername, waitTime, rideDuration, rideRowKey));
-
-            return new AcceptRideDTO(waitTime, rideDuration);
-        }
-
-        public async Task RateDriver(string clientUsername, int rating) {
-            string rideRowKey = await confirmedRideStateManager.ReadState(clientUsername);
-
-            if (rideRowKey != null) {  // If state isn't already deleted by Cleanup()
-                rideStorageManager.UpdateRideRating(rideRowKey, rating);
-
-                await confirmedRideStateManager.DeleteState(clientUsername);
+                return ResultMetadata.Success;
+            } catch (Exception ex) {
+                return ResultMetadata.Exception;
             }
         }
 
-        public async Task<List<UsersRideDTO>> GetUsersRides(string username) {
-            List<Ride> usersRides = rideStorageManager.ReadUsersRides(username);
+        public async Task<Result<RideStatus?>> GetRideStatus(string clientUsername) {
+            try {
+                string rideRowKey = await confirmedRideStateManager.ReadState(clientUsername);
 
-            List<UsersRideDTO> usersRideDTOs = new List<UsersRideDTO>();
-            foreach (Ride ride in usersRides) {
-                usersRideDTOs.Add(new UsersRideDTO(ride));
+                Ride ride = rideStorageManager.ReadRide(rideRowKey);
+
+                return new Result<RideStatus?>(ride.Status, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<RideStatus?>(ResultMetadata.Exception);
             }
-
-            return usersRideDTOs;
         }
 
-        public async Task<List<RideDTO>> GetRides() {
-            List<Ride> rides = rideStorageManager.ReadRides();
+        public async Task<Result<List<RequestedRideDTO>>> GetRequestedRides() {
+            try {
+                List<Ride> requestedRides = rideStorageManager.ReadRequestedRides();
 
-            List<RideDTO> rideDTOs = new List<RideDTO>();
-            foreach (Ride ride in rides) {
-                rideDTOs.Add(new RideDTO(ride));
+                List<RequestedRideDTO> requestedRideDTOs = new List<RequestedRideDTO>();
+                foreach (Ride ride in requestedRides) {
+                    requestedRideDTOs.Add(new RequestedRideDTO(ride));
+                }
+
+                return new Result<List<RequestedRideDTO>>(requestedRideDTOs, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<List<RequestedRideDTO>>(ResultMetadata.Exception);
             }
+        }
 
-            return rideDTOs;
+        public async Task<Result<AcceptRideDTO>> AcceptRide(string driverUsername, string rideRowKey) {
+            try {
+                Ride ride = rideStorageManager.ReadRide(rideRowKey);
+                Period waitTime = new Period(ride.WaitTime);
+                Period rideDuration = new Period(ride.Duration);
+
+                if (ride.Status == RideStatus.InProgress) {  // if some other driver has already accepted it 
+                    return new Result<AcceptRideDTO>(ResultMetadata.AlreadyAccepted);
+                }
+
+                rideStorageManager.UpdateRideStatusAndDriverUsername(rideRowKey, RideStatus.InProgress, driverUsername);
+
+                Task.Run(() => Cleanup(ride.ClientUsername, waitTime, rideDuration, rideRowKey));
+
+                return new Result<AcceptRideDTO>(new AcceptRideDTO(waitTime, rideDuration), ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<AcceptRideDTO>(ResultMetadata.Exception);
+            }
+        }
+
+        public async Task<ResultMetadata> RateDriver(string clientUsername, int rating) {
+            try {
+
+                string rideRowKey = await confirmedRideStateManager.ReadState(clientUsername);
+
+                if (rideRowKey != null) {  // If state isn't already deleted by Cleanup()
+                    rideStorageManager.UpdateRideRating(rideRowKey, rating);
+
+                    await confirmedRideStateManager.DeleteState(clientUsername);
+                }
+            
+                return ResultMetadata.Success;
+            } catch (Exception ex) {
+                return ResultMetadata.Exception;
+            }
+        }
+
+        public async Task<Result<List<UsersRideDTO>>> GetUsersRides(string username) {
+            try {
+                List<Ride> usersRides = rideStorageManager.ReadUsersRides(username);
+
+                List<UsersRideDTO> usersRideDTOs = new List<UsersRideDTO>();
+                foreach (Ride ride in usersRides) {
+                    usersRideDTOs.Add(new UsersRideDTO(ride));
+                }
+
+                return new Result<List<UsersRideDTO>>(usersRideDTOs, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<List<UsersRideDTO>>(ResultMetadata.Exception);
+            }
+        }
+
+        public async Task<Result<List<RideDTO>>> GetRides() {
+            try {
+                List<Ride> rides = rideStorageManager.ReadRides();
+
+                List<RideDTO> rideDTOs = new List<RideDTO>();
+                foreach (Ride ride in rides) {
+                    rideDTOs.Add(new RideDTO(ride));
+                }
+
+                return new Result<List<RideDTO>>(rideDTOs, ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<List<RideDTO>>(ResultMetadata.Exception);
+            }
+        }
+
+        public async Task<Result<double>> GetDriversAverageRating(string driverUsername) {
+            try {
+                List<Ride> usersRides = rideStorageManager.ReadUsersRides(driverUsername);
+
+                int ratingSum = 0;
+                int numberOfRatings = 0;
+                foreach (Ride ride in usersRides) {
+                    if (ride.DriverRating != -1) {
+                        ratingSum += ride.DriverRating;
+                        numberOfRatings++;
+                    }
+                }
+
+                if (numberOfRatings == 0) {
+                    return new Result<double>(0, ResultMetadata.Success);
+                }
+
+                return new Result<double>(Math.Round((double)ratingSum / (double)numberOfRatings, 2), ResultMetadata.Success);
+            } catch (Exception ex) {
+                return new Result<double>(ResultMetadata.Exception);
+            }
         }
 
 
         private async void DeleteOrderedRideStateAfter5Min(string clientUsername) {
-            await Task.Delay(new Period(5, 0).ToMilliseconds());
+            try {
+                await Task.Delay(new Period(5, 0).ToMilliseconds());
 
-            if (await orderedRideStateManager.ReadState(clientUsername) != null) {
-                await orderedRideStateManager.DeleteState(clientUsername);
+                if (await orderedRideStateManager.ReadState(clientUsername) != null) {
+                    await orderedRideStateManager.DeleteState(clientUsername);
+                }
+            } catch (Exception) {
+
             }
         }
 
         private async void Cleanup(string clientUsername, Period waitTime, Period rideDuration, string rideRowKey) {
-            await Task.Delay(waitTime.ToMilliseconds() + rideDuration.ToMilliseconds());
-            rideStorageManager.UpdateRideStatus(rideRowKey, RideStatus.Finished);
+            try {
+               await Task.Delay(waitTime.ToMilliseconds() + rideDuration.ToMilliseconds());
+                rideStorageManager.UpdateRideStatus(rideRowKey, RideStatus.Finished);
 
-            await Task.Delay(new Period(10, 0).ToMilliseconds());
-            if (await confirmedRideStateManager.ReadState(clientUsername) != null) {
-                await confirmedRideStateManager.DeleteState(clientUsername);
+                await Task.Delay(new Period(10, 0).ToMilliseconds());
+                if (await confirmedRideStateManager.ReadState(clientUsername) != null) {
+                    await confirmedRideStateManager.DeleteState(clientUsername);
+                } 
+            } catch (Exception) {
+
             }
         }
-
-        public async Task<double> GetDriversAverageRating(string driverUsername) {
-            List<Ride> usersRides = rideStorageManager.ReadUsersRides(driverUsername);
-
-            int ratingSum = 0;
-            foreach (Ride ride in usersRides) {
-                if (ride.DriverRating != -1) {
-                    ratingSum += ride.DriverRating;
-                }
-            }
-
-            return Math.Round((double)ratingSum / (double)usersRides.Count, 2);
-        }
-
 
 
 

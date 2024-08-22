@@ -1,6 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
-using Common.Model;
+using Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,32 +9,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WebUserCommon.Model {
-    [DataContract]
+    public enum UserRole { Client = 0, Driver = 1, Admin = 2 }
+
     public class User : ITableEntity {
-        [DataMember]
         public string Username { get; set; }
-        [DataMember]
         public string Email { get; set; }
-        [DataMember]
         public string Password { get; set; }
-        [DataMember]
         public string FirstName { get; set; }
-        [DataMember]
         public string LastName { get; set; }
-        [DataMember]
         public string DateOfBirth { get; set; }
-        [DataMember]
         public string Address { get; set; }
-        [DataMember]
         public UserRole? Role { get; set; }
 
-        [DataMember]
         public string PartitionKey { get; set; }
-        [DataMember]
         public string RowKey { get; set; }
-        [DataMember]
         public DateTimeOffset? Timestamp { get; set; }
-        [DataMember]
         public ETag ETag { get; set; }
 
 

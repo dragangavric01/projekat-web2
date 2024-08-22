@@ -1,37 +1,34 @@
 import './MyRides.css';
 import Navigation from './Navigation';
 import Header from '../elements/Header/Header';
-import { getUsersRides } from '../../services/httpService';
+import { getUsersRides, ResultMetadata } from '../../services/httpService';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import Text from '../elements/Text/Text';
 import { Common, CommonWidth } from './Common';
+import { Error } from '../elements/Error/Error';
 
 
 export default function MyRides() {
     const navigate = useNavigate()
 
     const [rides, setRides] = useState(null);
-
-    function checkResponse(result) {
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // show error
-        }
-    }
+    const [resultMetadata, setResultMetadata] = useState(null);
 
     useEffect(() => {
         getUsersRides().then(result => {
-            checkResponse(result);
-            setRides(result);
+            setResultMetadata(result.metadata);
+            setRides(result.data);
         });
     }, []);
 
+
     var component;
-    if (rides == null) {
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        component = <Error resultMetadata={resultMetadata}/>
+    } else if (rides == null) {  // not fetched yet
+        component = <br/>
+    } else if (rides.length == 0) {
         component = <Text content={"You have no rides."}/>
     } else {
         component = <MyRidesTable rides={rides}/>
@@ -68,12 +65,6 @@ function MyRidesTable({rides}) {
     if (rows == null) {
         return (<br/>);
     }
-
-    if (rows.length == 0) {
-        return (
-            <Text content={"There are no rides."}/>
-        );
-    } 
 
     return (
         <table>

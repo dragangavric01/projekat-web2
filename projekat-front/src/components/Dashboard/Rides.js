@@ -5,26 +5,22 @@ import Header from '../elements/Header/Header';
 import { RideStatus } from '../../model/Ride';
 import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getRides } from '../../services/httpService';
+import { getRides, ResultMetadata } from '../../services/httpService';
 import { Common, CommonWidth } from './Common';
 import Text from '../elements/Text/Text';
+import { Error } from '../elements/Error/Error';
 
 
 export default function Rides() {
     const navigate = useNavigate();
-    const [rides, setRides] = useState([]);
+    const [rides, setRides] = useState(null);
+    const [resultMetadata, setResultMetadata] = useState(null);
 
     async function getAndSetRides() {
+        setResultMetadata(null);
         const result = await getRides();
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // error
-        }
-
-        setRides(result);
+        setResultMetadata(result.metadata);
+        setRides(result.data);
     }
 
     useEffect(() => {
@@ -36,11 +32,22 @@ export default function Rides() {
     }, []);
 
 
+    var component;
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        component = <Error resultMetadata={resultMetadata}/>
+    } else if (rides == null) {  // not fetched yet
+        component = <br/>
+    } else if (rides.length == 0) {
+        component = <Text content={"There are no rides."}/>
+    } else {
+        component = <RidesTable rides={rides}/>
+    }
+
     return (
         <Common
             headerText={"Rides"}
 
-            bottomComponent={<RidesTable rides={rides}/>}
+            bottomComponent={component}
 
             width={CommonWidth.EXTRAWIDE}
         />
@@ -81,11 +88,6 @@ function RidesTable({rides}) {
         return (<br/>);;
     }
 
-    if (rows.length == 0) {
-        return (
-            <Text content={"There are no rides."}/>
-        );
-    } 
 
     return (
         <table>

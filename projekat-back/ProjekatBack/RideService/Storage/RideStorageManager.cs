@@ -20,110 +20,75 @@ namespace RideService.Storage {
         }
 
         public string CreateRide(Ride ride) {
-            try {
             Try:
-                try {
-                    tableClient.AddEntity(ride);
-                } catch (RequestFailedException ex) {
-                    if (ex.Status == 409) {
-                        // RowKey already exists
-                        ride.RowKey = Guid.NewGuid().ToString();
-                        goto Try;
-                    }
+            try {
+                tableClient.AddEntity(ride);
+            } catch (RequestFailedException ex) {
+                if (ex.Status == 409) {
+                    // RowKey already exists
+                    ride.RowKey = Guid.NewGuid().ToString();
+                    goto Try;
                 }
-            } catch (Exception) {
-                return null;
             }
 
             return ride.RowKey;
         }
 
         public Ride ReadRide(string rideRowKey) {
-            try {
-                var result = tableClient.GetEntity<Ride>("RidePartition", rideRowKey);
-                return result.Value;
-            } catch (Exception) {
-                return null;
-            }
+            var result = tableClient.GetEntity<Ride>("RidePartition", rideRowKey);
+            return result.Value;
         }
 
         public List<Ride> ReadRides() {
-            try {
-                Pageable<Ride> queryResults = tableClient.Query<Ride>();
-                return queryResults.AsEnumerable().ToList();
-            } catch (Exception) {
-                return null;
+            Pageable<Ride> queryResults = tableClient.Query<Ride>();
+            if (queryResults == null) {
+                return new List<Ride>();
             }
+
+            return queryResults.AsEnumerable().ToList();
         }
 
         public List<Ride> ReadRequestedRides() {
-            try {
-                Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: $"Status eq '{RideStatus.Requested.ToString()}'");
-                return queryResults.AsEnumerable().ToList();
-            } catch (Exception ex) {
-                return null;
+            Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: $"Status eq '{RideStatus.Requested.ToString()}'");
+            if (queryResults == null) {
+                return new List<Ride>();
             }
+
+            return queryResults.AsEnumerable().ToList();
         }
 
         public List<Ride> ReadUsersRides(string username) {
-            try {
-                Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: ride => ride.ClientUsername == username || ride.DriverUsername == username);
-                return queryResults.AsEnumerable().ToList();
-            } catch (Exception ex) {
-                return null;
+            Pageable<Ride> queryResults = tableClient.Query<Ride>(filter: ride => ride.ClientUsername == username || ride.DriverUsername == username);
+            if (queryResults == null) {
+                return new List<Ride>();
             }
+
+            return queryResults.AsEnumerable().ToList();
         }
 
-        public bool UpdateRideStatus(string rideRowKey, RideStatus rideStatus) {
+        public void UpdateRideStatus(string rideRowKey, RideStatus rideStatus) {
             Ride ride = ReadRide(rideRowKey);
-            if (ride == null) {
-                return false;
-            }
 
             ride.Status = rideStatus;
 
-            try {
-                tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
-            } catch (Exception) {
-                return false;
-            }
-
-            return true;
+            tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
         }
 
-        public bool UpdateRideStatusAndDriverUsername(string rideRowKey, RideStatus rideStatus, string driverUsername) {
+        public void UpdateRideStatusAndDriverUsername(string rideRowKey, RideStatus rideStatus, string driverUsername) {
             Ride ride = ReadRide(rideRowKey);
-            if (ride == null) {
-                return false;
-            }
 
             ride.Status = rideStatus;
             ride.DriverUsername = driverUsername;
 
-            try {
-                tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
-            } catch (Exception) {
-                return false;
-            }
-
-            return true;
+            tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
         }
 
-        public bool UpdateRideRating(string rideRowKey, int driverRating) {
+        public void UpdateRideRating(string rideRowKey, int driverRating) {
             Ride ride = ReadRide(rideRowKey);
-            if (ride == null) {
-                return false;
-            }
 
             ride.DriverRating = driverRating;
 
-            try {
-                tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
-            } catch (Exception) {
-                return false;
-            }
-
-            return true;
+            tableClient.UpdateEntity(ride, ride.ETag, TableUpdateMode.Merge);
         }
     }
 }

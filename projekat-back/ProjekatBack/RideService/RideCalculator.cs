@@ -14,11 +14,11 @@ namespace RideService {
         }
 
         public Period GetRideWaitTime(string startAddress, string destinationAddress) {
-            return new Period(0, random.Next(7, 13));
+            return new Period(0, random.Next(4, 7));
         }
 
         public Period GetRideDuration(string startAddress, string destinationAddress) {
-            return new Period(0, random.Next(15, 25));
+            return new Period(0, random.Next(7, 13));
         }
 
         private double GetRandomDouble(double min, double max) {

@@ -1,5 +1,4 @@
-﻿using Common.Model;
-using Microsoft.ServiceFabric.Data;
+﻿using Microsoft.ServiceFabric.Data;
 using Microsoft.ServiceFabric.Data.Collections;
 using System;
 using System.Collections.Generic;

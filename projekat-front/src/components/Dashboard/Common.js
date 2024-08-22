@@ -10,7 +10,7 @@ export const CommonWidth = {
     EXTRAWIDE: 2
 }
 
-export function Common({headerText, mainComponent, bottomComponent, noNavigation, width}) {
+export function Common({headerText, mainComponent, bottomComponent, noNavigation, width, disableNavigation}) {
     var rectangleClass;
     if (width == null || width == CommonWidth.NORMAL) {
         rectangleClass = "rectangle";
@@ -24,7 +24,7 @@ export function Common({headerText, mainComponent, bottomComponent, noNavigation
     if (noNavigation) {
         topComponent = <Banner/>;
     } else {
-        topComponent = <Navigation/>;
+        topComponent = <Navigation disable={disableNavigation}/>;
     }
 
     return (

@@ -1,4 +1,5 @@
-﻿using Microsoft.ServiceFabric.Services.Remoting;
+﻿using Common;
+using Microsoft.ServiceFabric.Services.Remoting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,15 +11,15 @@ using WebRideCommon.Model;
 
 namespace RideService {
     public interface IRideService : IService {
-        Task<OrderRideReturnDTO> OrderRide(string clientUsername, string startAddress, string destinationAddress);
-        Task<Period> ConfirmRide(string clientUsername);
-        Task CancelRide(string clientUsername);
-        Task<RideStatus?> GetRideStatus(string clientUsername);
-        Task<List<RequestedRideDTO>> GetRequestedRides();
-        Task<AcceptRideDTO> AcceptRide(string driverUsername, string rideRowKey);
-        Task RateDriver(string clientUsername, int rating);
-        Task<List<UsersRideDTO>> GetUsersRides(string username);
-        Task<List<RideDTO>> GetRides();
-        Task<double> GetDriversAverageRating(string driverUsername);
+        Task<Result<OrderRideReturnDTO>> OrderRide(string clientUsername, string startAddress, string destinationAddress);
+        Task<Result<Period>> ConfirmRide(string clientUsername);
+        Task<ResultMetadata> CancelRide(string clientUsername);
+        Task<Result<RideStatus?>> GetRideStatus(string clientUsername);
+        Task<Result<List<RequestedRideDTO>>> GetRequestedRides();
+        Task<Result<AcceptRideDTO>> AcceptRide(string driverUsername, string rideRowKey);
+        Task<ResultMetadata> RateDriver(string clientUsername, int rating);
+        Task<Result<List<UsersRideDTO>>> GetUsersRides(string username);
+        Task<Result<List<RideDTO>>> GetRides();
+        Task<Result<double>> GetDriversAverageRating(string driverUsername);
     }
 }

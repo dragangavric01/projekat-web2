@@ -5,20 +5,24 @@ import {NavigationButton, HandlerButton, ButtonSize } from '../elements/Button/B
 import Hyperlink, {HyperlinkSize} from '../elements/Hyperlink/Hyperlink.js';
 import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
-import { logIn } from '../../services/httpService.js';
+import { logIn, ResultMetadata } from '../../services/httpService.js';
 import {UserRole} from '../../model/User.js';
 import { clearGlobalState, getRoleFromToken, setRole, setToken } from '../../services/globalStateService.js';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useContext, useEffect, useState } from 'react';
 import jwt_decode from "jwt-decode";
 import { Common } from '../Dashboard/Common.js';
+import { Error } from '../elements/Error/Error.js';
 
 
 export default function LogIn() {
     const navigate = useNavigate();
+
+    const [resultMetadata, setResultMetadata] = useState(null);
+    const [validationText, setValidationText] = useState(null);
+
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const location = useLocation();
 
     useEffect(() => {
         clearGlobalState();
@@ -28,21 +32,20 @@ export default function LogIn() {
     const handlePasswordChange = (event) => setPassword(event.target.value);
 
     async function handleLogIn() {
-        var logInData = {email: email, password: password};
-        var token = await logIn(logInData);
-    
-        if (token == 'error') {
-            // show error
-        } else if (token == 'token expired') {
-            navigate('/log-in');
-        } else if (token == null) {
-            // show error
-        } else {
-            setToken(token);
+        setValidationText(null);
+        setResultMetadata(null);
 
-            if (location.pathname == "/dashboard") {
-                window.location.reload();
-            } else {
+        if (email == "" || password == "") {
+            setValidationText("All fields must be filled.");
+        } else {
+            var logInData = {email: email, password: password};
+            var result = await logIn(logInData);
+    
+            setResultMetadata(result.metadata);
+    
+            if (result.metadata == ResultMetadata.SUCCESS) {
+                setToken(result.data);
+    
                 navigate('/dashboard');
             }
         }
@@ -61,6 +64,7 @@ export default function LogIn() {
 
             bottomComponent={
                 <>
+                    <Error validationText={validationText} resultMetadata={resultMetadata}/>
                     <br/>
                     <HandlerButton text="Log in" size={ButtonSize.MEDIUM} handler={handleLogIn}/>
                     <br/>

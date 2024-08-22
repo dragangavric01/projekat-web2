@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Azure;
 using WebUserCommon.Model;
+using WebUserCommon.DTO;
 
 namespace UserService.Storage {
     public class DriverDataStorageManager {
@@ -21,31 +22,69 @@ namespace UserService.Storage {
         }
 
         public bool CreateDriverData(DriverData driverData) {
+            if (ReadDriverData(driverData.Username) != null) {
+                return false;
+            }
+
+            Try:
             try {
                 tableClient.AddEntity(driverData);
-            } catch (Exception) {
-                return false;
+            } catch (RequestFailedException ex) {
+                if (ex.Status == 409) {
+                    // RowKey already exists
+                    driverData.RowKey = Guid.NewGuid().ToString();
+                    goto Try;
+                }
             }
 
             return true;
         }
 
         public DriverData ReadDriverData(string driverUsername) {
-            try {
-                Pageable<DriverData> queryResults = tableClient.Query<DriverData>(filter: driverData => driverData.Username == driverUsername);
-                return queryResults.First();
-            } catch (Exception) {
+            Pageable<DriverData> queryResults = tableClient.Query<DriverData>(filter: driverData => driverData.Username == driverUsername);
+            if (queryResults == null || queryResults.Count() == 0) {
                 return null;
             }
-        }
+
+            return queryResults.First();
+    }
 
         public List<DriverData> ReadDriverDatas() {
-            try {
-                Pageable<DriverData> queryResults = tableClient.Query<DriverData>();
-                return queryResults.AsEnumerable().ToList();
-            } catch (Exception) {
+            Pageable<DriverData> queryResults = tableClient.Query<DriverData>();
+            if (queryResults == null || queryResults.Count() == 0) {
                 return null;
             }
+
+            return queryResults.AsEnumerable().ToList();
+        }
+
+        public bool UpdateDriversUsername(string oldUsername, string newUsername) {
+            if (ReadDriverData(newUsername) != null) {
+                return false;
+            }
+
+            DriverData driverData = ReadDriverData(oldUsername);
+
+            driverData.Username = newUsername;
+
+            tableClient.UpdateEntity(driverData, driverData.ETag, TableUpdateMode.Merge);
+
+            return true;
+        }
+
+        public void UpdateDriversRegistrationRequestStatus(string driverUsername, RegistrationRequestStatus newStatus) {
+            DriverData driverData = ReadDriverData(driverUsername);
+
+            driverData.RegistrationRequestStatus = newStatus;
+
+            tableClient.UpdateEntity(driverData, driverData.ETag, TableUpdateMode.Merge);
+        }
+        public void UpdateDriversBlocked(string driverUsername, bool newBlocked) {
+            DriverData driverData = ReadDriverData(driverUsername);
+
+            driverData.Blocked = newBlocked;
+
+            tableClient.UpdateEntity(driverData, driverData.ETag, TableUpdateMode.Merge);
         }
     }
 }

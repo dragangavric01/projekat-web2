@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using WebRideCommon.DTO;
 using System.Collections.Generic;
 using WebRideCommon.Model;
+using Common;
 
 namespace WebService.Controllers {
     [Route("rides")]
@@ -23,10 +24,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Driver")]
         public async Task<IActionResult> GetRequestedRides() {
             try {
-                List<RequestedRideDTO> requestedRides = await rideServiceProxy.GetRequestedRides();
-                return Ok(requestedRides);
+                Result<List<RequestedRideDTO>> result = await rideServiceProxy.GetRequestedRides();
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<List<RequestedRideDTO>>(ResultMetadata.Exception));
             }
         }
 
@@ -34,10 +36,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client,Driver")]
         public async Task<IActionResult> GetUsersRides() {
             try {
-                List<UsersRideDTO> usersRides = await rideServiceProxy.GetUsersRides(tokenExtractor.GetUsernameFromToken(User));
-                return Ok(usersRides);
+                Result<List<UsersRideDTO>> result = await rideServiceProxy.GetUsersRides(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<List<UsersRideDTO>>(ResultMetadata.Exception));
             }
         }
 
@@ -45,10 +48,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetRides() {
             try {
-                List<RideDTO> rides = await rideServiceProxy.GetRides();
-                return Ok(rides);
+                Result<List<RideDTO>> result = await rideServiceProxy.GetRides();
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<List<RideDTO>>(ResultMetadata.Exception));
             }
         }
 
@@ -56,10 +60,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetDriversAverageRating([FromBody] string driversUsername) {
             try {
-                double result = await rideServiceProxy.GetDriversAverageRating(driversUsername);
+                Result<double> result = await rideServiceProxy.GetDriversAverageRating(driversUsername);
+
                 return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<double>(ResultMetadata.Exception));
             }
         }
     }

@@ -1,7 +1,9 @@
-﻿using Common.Model;
+﻿using Common;
 using Microsoft.AspNetCore.Http;
+using WebUserCommon.Model;
 
-namespace WebService.DTO {
+namespace WebService.DTO
+{
     public class ProfileUploadDTO {
         public string Username { get; set; }
         public string Email { get; set; }

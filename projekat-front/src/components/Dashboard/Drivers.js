@@ -6,28 +6,25 @@ import Text from '../elements/Text/Text';
 import './Drivers.css';
 import {HandlerButton, NavigationButton} from '../elements/Button/Button';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getDriver, getDrivers, getDriversAverageRating } from '../../services/httpService';
+import { acceptDriversRegistrationRequest, blockDriver, denyDriversRegistrationRequest, getDriver, getDrivers, getDriversAverageRating, ResultMetadata, unblockDriver } from '../../services/httpService';
 import { Common, CommonWidth } from './Common';
 import { useEffect, useState } from 'react';
 import {RegistrationRequestStatus} from '../../model/DriverData'
 import Output from '../elements/Output/Output';
+import { BackError, Error } from '../elements/Error/Error';
 
 
 export default function Drivers() {
     const navigate = useNavigate();
-    const [drivers, setDrivers] = useState([]);
+
+    const [drivers, setDrivers] = useState(null);
+    const [resultMetadata, setResultMetadata] = useState(null);
 
     async function getAndSetDrivers() {
+        setResultMetadata(null);
         const result = await getDrivers();
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // error
-        }
-
-        setDrivers(result);
+        setResultMetadata(result.metadata);
+        setDrivers(result.data);
     }
 
     useEffect(() => {
@@ -39,11 +36,22 @@ export default function Drivers() {
     }, []);
 
 
+    var component;
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        component = <Error resultMetadata={resultMetadata}/>
+    } else if (drivers == null) {  // not fetched yet
+        component = <br/>
+    } else if (drivers.length == 0) {
+        component = <Text content={"There are no drivers."}/>
+    } else {
+        component = <DriversTable drivers={drivers}/>
+    }
+
     return (
         <Common
             headerText={"Drivers"}
 
-            bottomComponent={<DriversTable drivers={drivers}/>}
+            bottomComponent={component}
 
             width={CommonWidth.NORMAL}
         />
@@ -70,12 +78,6 @@ function DriversTable({drivers}) {
         return (<br/>);
     }
 
-    if (rows.length == 0) {
-        return (
-            <Text content={"There are no drivers."}/>
-        );
-    } 
-
     return (
         <table>
             <thead>
@@ -98,9 +100,16 @@ function DriversTableHeader() {
 }
 
 function DriversTableRow({username, registrationRequestStatus, isBlocked}) {
+    var linkColor;
+    if (isBlocked) {
+        linkColor = "darkred";
+    } else {
+        linkColor = "darkblue";
+    }
+
     return (
         <tr>
-            <td><Hyperlink text={username} path={'/dashboard/drivers/' + username}/></td>
+            <td><Hyperlink text={username} path={'/dashboard/drivers/' + username} textColor={linkColor}/></td>
             <td><p>{registrationRequestStatus}</p></td>
         </tr>
     );
@@ -111,47 +120,100 @@ export function Driver() {
     const {driverUsername} = useParams();
     const navigate = useNavigate();
 
+    const [resultMetadata1, setResultMetadata1] = useState(null);
+    const [resultMetadata2, setResultMetadata2] = useState(null);
     const [driver, setDriver] = useState(null);
     const [averageRating, setAverageRating] = useState(null);
-
-    function checkResponse(result) {
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // show error
-        }
-    }
+    const [accepted, setAccepted] = useState(false);
+    const [denied, setDenied] = useState(false);
+    const [blockedUpdated, setBlockedUpdated] = useState(false);
 
     useEffect(() => {
-        getDriver(driverUsername).then(result => {
-            checkResponse(result);
-            setDriver(result);
+        setResultMetadata1(null);
+        setResultMetadata2(null);
+
+        getDriver(driverUsername).then(result1 => {
+            setResultMetadata1(result1.metadata);
+            setDriver(result1.data);
         });
 
-        getDriversAverageRating(driverUsername).then(result => {
-            checkResponse(result);
-            setAverageRating(result);
+        getDriversAverageRating(driverUsername).then(result2 => {
+            setResultMetadata2(result2.metadata);
+            setAverageRating(result2.data);
         });
     }, []);
 
-    function handleAccept() {
+    useEffect(() => {
+        if (accepted) {
+            const newDriver = JSON.parse(JSON.stringify(driver));
+            newDriver.registrationRequestStatus = RegistrationRequestStatus.ACCEPTED;
+            setDriver(newDriver);
 
+            setAccepted(false);
+        } else if (denied) {
+            const newDriver = JSON.parse(JSON.stringify(driver));
+            newDriver.registrationRequestStatus = RegistrationRequestStatus.DENIED;
+            setDriver(newDriver);
+
+            setDenied(false);
+        } else if (blockedUpdated) {
+            const newDriver = JSON.parse(JSON.stringify(driver));
+
+            if (driver.blocked) {
+                newDriver.blocked = false;
+            } else {
+                newDriver.blocked = true;
+            }
+            setDriver(newDriver);
+            
+            setBlockedUpdated(false);
+        }
+    }, [accepted, denied, blockedUpdated]);
+
+
+    async function handleAccept() {
+        setResultMetadata1(null);
+
+        const result = await acceptDriversRegistrationRequest(driverUsername);
+
+        setResultMetadata1(result);
+        setAccepted(true);
     }
 
-    function handleDeny() {
+    async function handleDeny() {
+        setResultMetadata1(null);
+        const result = await denyDriversRegistrationRequest(driverUsername);
 
+        setResultMetadata1(result);
+        setDenied(true);
     }
 
-    function handleBlock() {
-
+    async function handleBlock() {
+        setResultMetadata1(null);
+        const result = await blockDriver(driverUsername);
+        
+        setResultMetadata1(result);
+        setBlockedUpdated(true);
     }
 
-    function handleUnblock() {
+    async function handleUnblock() {
+        setResultMetadata1(null);
+        const result = await unblockDriver(driverUsername);
 
+        setResultMetadata1(result);
+        setBlockedUpdated(true);
     }
 
+
+    if (resultMetadata1 != null && resultMetadata1 != ResultMetadata.SUCCESS) {
+        return (
+            <Common bottomComponent={<BackError resultMetadata={resultMetadata1}/>}/>
+        );
+    } else if (resultMetadata2 != null && resultMetadata2 != ResultMetadata.SUCCESS) {
+        return (
+            <Common bottomComponent={<BackError resultMetadata={resultMetadata2}/>}/>
+        );
+    }
 
     if (driver == null || averageRating == null) return(
         <Navigation/>
@@ -169,7 +231,7 @@ export function Driver() {
     }
 
     var blockingSection;
-    if (driver.isBlocked) {
+    if (driver.blocked) {
         blockingSection = 
             <>
                 <Text content={"Driver is blocked."}/>

@@ -9,32 +9,31 @@ import { useContext, useEffect } from 'react';
 import {UserRole} from '../../model/User.js'
 import { useState } from 'react';
 import { setToken, setRole, getRoleFromToken, convertRoleToInt } from '../../services/globalStateService.js';
-import { getCurrentUser, updateProfile } from '../../services/httpService.js';
+import { getCurrentUser, ResultMetadata, updateProfile } from '../../services/httpService.js';
 import Input, { InputType } from '../elements/Input/Input.js';
 import Output from '../elements/Output/Output.js';
+import { Common } from './Common.js';
+import { BackError, Error } from '../elements/Error/Error.js';
 
 
 export default function Profile() {
     const navigate = useNavigate();
 
     const [user, setUser] = useState(null);
-
-    function checkResponse(result) {
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // show error
-        }
-    }
+    const [resultMetadata, setResultMetadata] = useState(null);
 
     useEffect(() => {
         getCurrentUser().then(result => {
-            checkResponse(result);
-            setUser(result);
+            setResultMetadata(result.metadata);
+            setUser(result.data);
         });
     }, []);
+
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        return (
+            <Common bottomComponent={<BackError resultMetadata={resultMetadata}/>}/>
+        );
+    }
 
     if (user == null) return(
         <Navigation/>

@@ -6,20 +6,22 @@ import {NavigationButton, ButtonSize, HandlerButton} from '../elements/Button/Bu
 import Text from '../elements/Text/Text.js';
 import {Rate} from '../elements/StarRating/StarRating.js'
 import {Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { cancelRide, confirmRide, getRideStatus, orderRide, rateDriver } from '../../services/httpService.js';
+import { cancelRide, confirmRide, getRideStatus, orderRide, rateDriver, ResultMetadata } from '../../services/httpService.js';
 import { useEffect, useState } from 'react';
 import Output from '../elements/Output/Output.js';
 import { RideStatus } from '../../model/Ride.js';
 import { UserRole } from '../../model/User.js';
-import { getRoleFromToken, getToken, setIsRideActive } from '../../services/globalStateService.js';
+import { getIsRideActive, getRoleFromToken, getToken, setIsRideActive } from '../../services/globalStateService.js';
 import { Common } from './Common.js';
+import { BackError, FrontError } from '../elements/Error/Error.js';
 
 
 export default function NewRide() {
-    const navigate = useNavigate();
+    const [resultMetadata, setResultMetadata] = useState(null);
+    const [validationText, setValidationText] = useState(null);
 
-    const [startAddress, setStartAddress] = useState(null);
-    const [destinationAddress, setDestinationAddress] = useState(null);
+    const [startAddress, setStartAddress] = useState("");
+    const [destinationAddress, setDestinationAddress] = useState("");
     const [price, setPrice] = useState(null);
     const [waitTime, setWaitTime] = useState(null);
     const [duration, setDuration] = useState(null);
@@ -28,44 +30,51 @@ export default function NewRide() {
     const handleDestinationAddressChange = (event) => {setDestinationAddress(event.target.value); };
 
     async function handleOrder() {
-        const addresses = {
-            startAddress: startAddress,
-            destinationAddress: destinationAddress
+        setValidationText(null);
+        setResultMetadata(null);
+
+        if (startAddress == "" || destinationAddress == "") {
+            setValidationText("All fields must be filled.");
+        } else {
+            const addresses = {
+                startAddress: startAddress,
+                destinationAddress: destinationAddress
+            }
+    
+            // No longer need it so it shouldn't waste memory
+            setStartAddress(null);
+            setDestinationAddress(null);
+    
+            const result = await orderRide(addresses);
+    
+            setResultMetadata(result.metadata);
+    
+            if (result.metadata == ResultMetadata.SUCCESS) {
+                setPrice(result.data.price);
+                setWaitTime(result.data.waitTime);
+            }
         }
-
-        // No longer need it so it shouldn't waste memory
-        setStartAddress(null);
-        setDestinationAddress(null);
-
-        const result = await orderRide(addresses);
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // show error
-        } 
-
-        setPrice(result.price);
-        setWaitTime(result.waitTime);
     }
 
     async function handleConfirm() {
+        setValidationText(null);
+        setResultMetadata(null);
         const result = await confirmRide();
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // napisi da je ili proslo previse vremena od order-ovanja ili je neki error
-        }
 
-        setDuration(result);
-        setPrice(null);
+        setResultMetadata(result.metadata);
+
+        if (result.metadata == ResultMetadata.SUCCESS) {
+            setDuration(result.data);
+            setPrice(null);
+        }
     }
 
     async function handleCancel() {
-        await cancelRide();
+        setValidationText(null);
+        setResultMetadata(null);
+        const result = await cancelRide();
+
+        setResultMetadata(result.metadata);
 
         setPrice(null);
         setWaitTime(null);
@@ -73,12 +82,14 @@ export default function NewRide() {
 
 
     var component;
-    if (duration != null) {
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        component = <Common bottomComponent={<BackError resultMetadata={resultMetadata}/>}/>
+    } else if (duration != null) {
         component = <CurrentRideWait waitTime={waitTime} duration={duration}/>
     } else if (waitTime != null) {
         component = <ConfirmRide price={price} waitTime={waitTime} confirmRideHandler={handleConfirm} cancelRideHandler={handleCancel}/>
     } else {
-        component = <OrderRide handleStartAddressChange={handleStartAddressChange} handleDestinationAddressChange={handleDestinationAddressChange} handleOrder={handleOrder}/>
+        component = <OrderRide handleStartAddressChange={handleStartAddressChange} handleDestinationAddressChange={handleDestinationAddressChange} handleOrder={handleOrder} validationText={validationText}/>
     }
 
     return (
@@ -89,7 +100,7 @@ export default function NewRide() {
 }
 
 
-function OrderRide({handleStartAddressChange, handleDestinationAddressChange, handleOrder}) {
+function OrderRide({handleStartAddressChange, handleDestinationAddressChange, handleOrder, validationText}) {
     return (
         <Common
             headerText={"New ride"}
@@ -103,6 +114,7 @@ function OrderRide({handleStartAddressChange, handleDestinationAddressChange, ha
 
             bottomComponent={
                 <>
+                    <FrontError text={validationText}/>
                     <br/>
                     <HandlerButton text={"Order a taxi"} size={ButtonSize.MEDIUM} handler={handleOrder}/>
                 </>
@@ -139,31 +151,36 @@ function ConfirmRide({price, waitTime, confirmRideHandler, cancelRideHandler}) {
 function CurrentRideWait({waitTime, duration}) {
     const navigate = useNavigate();
 
-    async function navigateToCurrentRide() {
-        const result = await getRideStatus();
-        console.log(result);
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // error
-        }
+    const [resultMetadata, setResultMetadata] = useState(null);
 
-        if (result == RideStatus.INPROGRESS) {
-            setIsRideActive(true);
-            navigate('/dashboard/current-ride', {state: {waitTime: waitTime, duration: duration}});
+    async function navigateToCurrentRide() {
+        setResultMetadata(null);
+        const result = await getRideStatus();
+
+        setResultMetadata(result.metadata);
+
+        if (result.metadata == ResultMetadata.SUCCESS) {
+            if (result.data == RideStatus.INPROGRESS) {
+                setIsRideActive(true);
+                navigate('/dashboard/current-ride', {state: {waitTime: waitTime, duration: duration}});
+            }
         }
     }
 
     useEffect(() => {
         navigateToCurrentRide();
 
-        const intervalId = setInterval(navigateToCurrentRide, 3000);
+        const intervalId = setInterval(navigateToCurrentRide, 1000);
 
         return () => clearInterval(intervalId);    
     }, []);
 
+
+    if (resultMetadata != null && resultMetadata != ResultMetadata.SUCCESS) {
+        return (
+            <Common bottomComponent={<BackError resultMetadata={resultMetadata}/>}/>
+        );
+    }
 
     return (
         <Common
@@ -172,6 +189,8 @@ function CurrentRideWait({waitTime, duration}) {
             mainComponent={
                 <Text content={"Waiting for a driver to accept the ride..."}/>
             }
+
+            disableNavigation={true}
         />
     );
 }
@@ -194,6 +213,7 @@ export function CurrentRide() {
 
         return decrementedCounter;
     }
+
 
     useEffect(() => {
         if (!isCounterZero(waitTimeCounter)) {
@@ -227,6 +247,8 @@ export function CurrentRide() {
             headerText={"Current ride"}
 
             bottomComponent={component}
+
+            disableNavigation={true}
         />
     );
 }
@@ -247,11 +269,16 @@ function RateDriver() {
     const navigate = useNavigate();
 
     const [rating, setRating] = useState(0);
+    const [validationText, setValidationText] = useState(null);
 
     async function handleSendRating() {
-        await rateDriver(rating);
-
-        navigate("/dashboard/my-rides");
+        setValidationText(null);
+        if (rating == null || rating == 0) {
+            setValidationText("Rating was not chosen.");
+        } else {
+            await rateDriver(rating);
+            navigate("/dashboard/my-rides");
+        }
     }
 
     function handleExit() {
@@ -268,6 +295,7 @@ function RateDriver() {
             <br/>
             <Text content={"Rate the driver:"}/>
             <Rate rating={rating} setRating={setRating}/>
+            <FrontError text={validationText}/>
             <br/>
             <div className='horizontally-aligned-buttons'>
                 <HandlerButton text="Send rating" size={ButtonSize.MEDIUM} handler={handleSendRating}/>

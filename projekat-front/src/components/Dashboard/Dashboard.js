@@ -5,6 +5,6 @@ import { Common } from './Common';
 
 export default function Dashboard() {
     return (
-        <Common headerText={"Welcome to uTaxi dashboard!"}/>
+        <Common headerText={"Welcome to uTaxi dashboard!"} />
     );
 }

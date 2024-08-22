@@ -14,6 +14,7 @@ using Azure.Storage.Blobs.Specialized;
 using Azure;
 using WebUserCommon.Model;
 using System.Net.Http.Headers;
+using Common;
 
 namespace UserService.Storage {
     public class UserStorageManager {
@@ -31,56 +32,65 @@ namespace UserService.Storage {
             tableClient.CreateIfNotExists();
         }
 
-        public bool CreateUser(User user, byte[] picture) {
-            try {
-                Try:
-                try {
-                    tableClient.AddEntity(user);
-                } catch (RequestFailedException ex) {
-                    if (ex.Status == 409) {
-                        // RowKey already exists
-                        user.RowKey = Guid.NewGuid().ToString();
-                        goto Try;
-                    }
-                }
-
-                CreateOrUpdatePictureBlob(user.Username, picture);
-            } catch (Exception) {
-                return false;
+        public ResultMetadata CreateUser(User user, byte[] picture) {
+            if (ReadUser(user.Username) != null) {
+                return ResultMetadata.UsernameConflict;
+            }
+                
+            if (ReadUser(user.Email) != null) {
+                return ResultMetadata.EmailConflict;
             }
 
-            return true;
+            Try:
+            try {
+                tableClient.AddEntity(user);
+            } catch (RequestFailedException ex) {
+                if (ex.Status == 409) {
+                    // RowKey already exists
+                    user.RowKey = Guid.NewGuid().ToString();
+                    goto Try;
+                }
+            }
+
+            CreateOrUpdatePictureBlob(user.Username, picture);
+
+            return ResultMetadata.Success;
         }
 
         public User ReadUser(string username) {
-            try {
-                Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Username == username);
-                return queryResults.First();
-            } catch (Exception) {
+            Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Username == username);
+            if (queryResults == null || queryResults.Count() == 0) {
                 return null;
             }
+
+            return queryResults.First();
         }
 
         public User ReadUserByEmail(string email) {
-            try {
-                Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Email == email);
-                return queryResults.First();
-            } catch (Exception) {
+            Pageable<User> queryResults = tableClient.Query<User>(filter: user => user.Email == email);
+            if (queryResults == null || queryResults.Count() == 0) {
                 return null;
             }
+
+            return queryResults.First();
         }
 
-        public bool UpdateUser(string username, User user, byte[] picture) {
+        public ResultMetadata UpdateUser(string username, User user, byte[] picture) {
             User existingUser = ReadUser(username);
-            if (existingUser == null) {
-                return false;
-            }
 
             if (user.Username != null) {
+                if (ReadUser(user.Username) != null) {
+                    return ResultMetadata.UsernameConflict;
+                }
+
                 existingUser.Username = user.Username;
             }
 
             if (user.Email != null) {
+                if (ReadUserByEmail(user.Email) != null) {
+                    return ResultMetadata.EmailConflict;
+                }
+
                 existingUser.Email = user.Email;
             }
 
@@ -104,24 +114,20 @@ namespace UserService.Storage {
                 existingUser.Address = user.Address;
             }
 
-            try {
-                tableClient.UpdateEntity(existingUser, existingUser.ETag, TableUpdateMode.Merge);
+            tableClient.UpdateEntity(existingUser, existingUser.ETag, TableUpdateMode.Merge);
 
-                if (picture != null) {
-                    if (username != existingUser.Username) {
-                        CreateOrUpdatePictureBlob(existingUser.Username, picture);
-                        DeletePictureBlob(username);
-                    } else {
-                        CreateOrUpdatePictureBlob(username, picture);
-                    }
-                } else if (username != existingUser.Username) {
-                    ChangePictureBlobName(username, existingUser.Username);
+            if (picture != null) {
+                if (username != existingUser.Username) {
+                    CreateOrUpdatePictureBlob(existingUser.Username, picture);
+                    DeletePictureBlob(username);
+                } else {
+                    CreateOrUpdatePictureBlob(username, picture);
                 }
-            } catch (Exception) {
-                return false;
+            } else if (username != existingUser.Username) {
+                ChangePictureBlobName(username, existingUser.Username);
             }
 
-            return true;
+            return ResultMetadata.Success;
         }
 
         private void CreateOrUpdatePictureBlob(string username, byte[] picture) {
@@ -129,16 +135,11 @@ namespace UserService.Storage {
             blobClient.Upload(new BinaryData(picture), overwrite: true);
         }
 
-
         public byte[] ReadPictureBlob(string username) {
-            try {
-                BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
-                BlobDownloadResult result = blobClient.DownloadContent();
+            BlobClient blobClient = blobContainerClient.GetBlobClient("picture_" + username);
+            BlobDownloadResult result = blobClient.DownloadContent();
 
-                return result.Content.ToArray();
-            } catch (Exception) {
-                return null;
-            }
+            return result.Content.ToArray();
         }
 
         private void DeletePictureBlob(string username) {

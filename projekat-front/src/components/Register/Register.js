@@ -6,13 +6,19 @@ import Header from '../elements/Header/Header.js';
 import Banner from '../Banner/Banner.js';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { register } from '../../services/httpService.js';
+import { register, ResultMetadata } from '../../services/httpService.js';
 import { setToken, setRole, getRoleFromToken, convertRoleToInt } from '../../services/globalStateService.js';
 import {User, UserRole} from '../../model/User.js'
 import { Common } from '../Dashboard/Common.js';
+import { ValidationError } from '../elements/Error/Error.js';
+import { Error } from '../elements/Error/Error.js';
+
 
 export default function Register() {
     const navigate = useNavigate();
+
+    const [resultMetadata, setResultMetadata] = useState(null);
+    const [validationText, setValidationText] = useState(null);
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -37,23 +43,24 @@ export default function Register() {
     const handlePictureChange = (event) => setPicture(event.target.files[0]);
 
     async function handleRegister() {
+        setValidationText(null);
+        setResultMetadata(null);
+
         if (password != repeatedPassword) {
-            // error
-        }
-
-        const user = new User(username, email, password, firstName, lastName, dateOfBirth, address, userRole, picture);
-        var token = await register(user);
-
-        if (token == 'error') {
-            // show error
-        } else if (token == 'token expired') {
-            navigate('/log-in');
-        } else if (token == null) {
-            // show error
+            setValidationText("The passwords don't match.");
+        } else if (email == "" || password == "" || username == "" || firstName == "" || lastName == "" || address == "" || dateOfBirth == "" || picture == null) {
+            setValidationText("All fields must be filled.");
         } else {
-            setToken(token);
-
-            navigate('/dashboard');
+            const user = new User(username, email, password, firstName, lastName, dateOfBirth, address, userRole, picture);
+            var result = await register(user);
+    
+            setResultMetadata(result.metadata);
+    
+            if (result.metadata == ResultMetadata.SUCCESS) {
+                setToken(result.data);
+    
+                navigate('/dashboard');
+            }
         }
     }
 
@@ -79,6 +86,7 @@ export default function Register() {
 
             bottomComponent={
                 <>
+                    <Error validationText={validationText} resultMetadata={resultMetadata}/>
                     <br/>
                     <HandlerButton text="Register" size={ButtonSize.MEDIUM} handler={handleRegister}/>
                     <br/>

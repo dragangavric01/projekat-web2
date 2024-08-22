@@ -3,17 +3,18 @@ import LogIn, { LogOut } from '../LogIn/LogIn.js';
 import Register from '../Register/Register.js';
 import Profile from '../Dashboard/Profile.js';
 import { EditProfile } from '../Dashboard/EditProfile.js';
-import {BrowserRouter,Routes, Route, useNavigate, useLocation} from 'react-router-dom'
+import {BrowserRouter,Routes, Route, useNavigate, useLocation, Navigate} from 'react-router-dom'
 import MyRides from '../Dashboard/MyRides.js';
 import NewRide, {ConfirmRide, CurrentRide, CurrentRideClient, CurrentRideWait} from '../Dashboard/NewRide.js';
 import {NewRides, CurrentRideDriver} from '../Dashboard/NewRides.js';
 import Rides from '../Dashboard/Rides.js';
 import Drivers, { Driver } from '../Dashboard/Drivers.js';
 import Dashboard from '../Dashboard/Dashboard.js';
-import { clearGlobalState, getIsRideActive, getRole, getRoleFromToken, getToken, setRole } from '../../services/globalStateService.js';
+import { clearGlobalState, getIsRideActive, setIsRideActive, getRole, getRoleFromToken, getToken, setRole } from '../../services/globalStateService.js';
 import Text from '../elements/Text/Text.js';
 import { UserRole } from '../../model/User.js';
 import { useEffect } from 'react';
+import { ButtonSize, HandlerButton } from '../elements/Button/Button.js';
 
 
 export default function App() {
@@ -45,22 +46,49 @@ export default function App() {
 
 
 function ProtectedRoute({component, requiredRole, alternateRole, rideActiveRestriction}) {
-    const role = getRoleFromToken(getToken());
+    const navigate = useNavigate();
+    const token = getToken();
+    const role = getRoleFromToken(token);
 
-    if (role == null) {
-        return (<LogIn/>);
+    function goBack() {
+        navigate(-1);
+    }
+
+    if (token == null) {
+        return (<Navigate to="/log-in"/>);
     } 
 
     if (requiredRole != null && role != requiredRole) {
         if (alternateRole == null || (alternateRole != null && role != alternateRole)) {
-            return (<Text content={"Unauthorized access"}/>);
+            return (
+                <div style={{textAlign: 'center', marginTop: '100px'}}>
+                    <Text content={"Unauthorized access"} bold={true}/>
+                    <br/>
+                    <br/>
+                    <HandlerButton text={"Go back"} size={ButtonSize.MEDIUM} handler={goBack}/>
+                </div>
+            );
         }
     }
 
+    const isRideActive = getIsRideActive();    
     if (rideActiveRestriction) {
-        if (!getIsRideActive()) {
-            return (<Text content={"There is no active ride"}/>);
+        if (!isRideActive) {
+            return (
+                <div style={{textAlign: 'center', marginTop: '100px'}}>
+                    <Text content={"There is no active ride"} bold={true}/>
+                    <br/>
+                    <br/>
+                    <HandlerButton text={"Go back"} size={ButtonSize.MEDIUM} handler={goBack}/>
+                </div> 
+            );
         }
+    } else if (isRideActive) {
+        setIsRideActive(false);
+    }
+
+    if (role == UserRole.DRIVER) {
+
     }
 
     return component;

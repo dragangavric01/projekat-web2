@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.ServiceFabric.Services.Client;
@@ -24,10 +25,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> OrderRide([FromBody] OrderRideDTO orderRideDTO) {
             try {
-                OrderRideReturnDTO orderRideReturnDTO = await rideServiceProxy.OrderRide(tokenExtractor.GetUsernameFromToken(User), orderRideDTO.StartAddress, orderRideDTO.DestinationAddress);
-                return Ok(orderRideReturnDTO);
+                Result<OrderRideReturnDTO> result = await rideServiceProxy.OrderRide(tokenExtractor.GetUsernameFromToken(User), orderRideDTO.StartAddress, orderRideDTO.DestinationAddress);
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<OrderRideReturnDTO>(ResultMetadata.Exception));
             }
         }
 
@@ -35,10 +37,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> ConfirmRide() {
             try {
-                Period duration = await rideServiceProxy.ConfirmRide(tokenExtractor.GetUsernameFromToken(User));
-                return Ok(duration);
+                Result<Period> result = await rideServiceProxy.ConfirmRide(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<Period>(ResultMetadata.Exception));
             }
         }
 
@@ -46,10 +49,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> CancelRide() {
             try {
-                await rideServiceProxy.CancelRide(tokenExtractor.GetUsernameFromToken(User));
-                return Ok();
+                ResultMetadata metadata = await rideServiceProxy.CancelRide(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(metadata);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(ResultMetadata.Exception);
             }
         }
 
@@ -57,10 +61,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> GetRideStatus() {
             try {
-                RideStatus? rideStatus = await rideServiceProxy.GetRideStatus(tokenExtractor.GetUsernameFromToken(User));
-                return Ok(rideStatus);
+                Result<RideStatus?> result = await rideServiceProxy.GetRideStatus(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<RideStatus?>(ResultMetadata.Exception));
             }
         }
 
@@ -68,10 +73,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Driver")]
         public async Task<IActionResult> AcceptRide([FromBody] string rideRowKey) {
             try {
-                AcceptRideDTO acceptRideDTO = await rideServiceProxy.AcceptRide(tokenExtractor.GetUsernameFromToken(User), rideRowKey);
-                return Ok(acceptRideDTO);
+                Result<AcceptRideDTO> result = await rideServiceProxy.AcceptRide(tokenExtractor.GetUsernameFromToken(User), rideRowKey);
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<AcceptRideDTO>(ResultMetadata.Exception));
             }
         }
 
@@ -79,10 +85,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Client")]
         public async Task<IActionResult> RateDriver([FromBody] int rating) {
             try {
-                await rideServiceProxy.RateDriver(tokenExtractor.GetUsernameFromToken(User), rating);
-                return Ok();
+                ResultMetadata metadata = await rideServiceProxy.RateDriver(tokenExtractor.GetUsernameFromToken(User), rating);
+
+                return Ok(metadata);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(ResultMetadata.Exception);
             }
         }
     }

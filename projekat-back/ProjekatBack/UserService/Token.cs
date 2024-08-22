@@ -1,4 +1,4 @@
-﻿using Common.Model;
+﻿using Common;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -8,8 +8,10 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using WebUserCommon.Model;
 
-namespace UserService {
+namespace UserService
+{
     public class Token {
         public string Content { get; set; }
 

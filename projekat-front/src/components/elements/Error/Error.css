@@ -1,0 +1,12 @@
+
+.error {
+    font-family: Arial;
+    font-weight: 600;
+    font-size: medium;
+    display: inline;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    color: darkred;
+}

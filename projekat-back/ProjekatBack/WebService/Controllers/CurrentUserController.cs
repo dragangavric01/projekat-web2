@@ -6,7 +6,6 @@ using System.Net.Http;
 using Microsoft.ServiceFabric.Services.Client;
 using Microsoft.ServiceFabric.Services.Remoting.Client;
 using System.Threading.Tasks;
-using Common.Model;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using System.Linq;
@@ -16,6 +15,8 @@ using Microsoft.AspNetCore.Mvc;
 using WebService.DTO;
 using WebUserCommon.Model;
 using System.IO;
+using UserService.Storage;
+using Common;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,26 +33,30 @@ namespace WebService.Controllers
             try {
                 User user = new User(profileDTO.Username, profileDTO.Email, profileDTO.Password, profileDTO.FirstName, profileDTO.LastName, profileDTO.DateOfBirth, profileDTO.Address, profileDTO.Role);
                 
-                byte[] picture;
-                using (var memoryStream = new MemoryStream()) {
-                    profileDTO.Picture.CopyTo(memoryStream);
-                    picture = memoryStream.ToArray();
+                byte[] picture = null;
+                if (profileDTO.Picture != null) {
+                    using (var memoryStream = new MemoryStream()) {
+                        profileDTO.Picture.CopyTo(memoryStream);
+                        picture = memoryStream.ToArray();
+                    }
                 }
 
-                string token = await userServiceProxy.Register(user, picture);
-                return Ok(token);
+                Result<string> result = await userServiceProxy.Register(user, picture);
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<string>(ResultMetadata.Exception));
             }
         }
 
         [HttpPost("log-in")]
         public async Task<IActionResult> LogIn([FromBody] LogInDTO logInDTO) {
             try {
-                string token = await userServiceProxy.LogIn(logInDTO.Email, logInDTO.Password);
-                return Ok(token);
+                Result<string> result = await userServiceProxy.LogIn(logInDTO.Email, logInDTO.Password);
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<string>(ResultMetadata.Exception));
             }
         }
 
@@ -59,10 +64,11 @@ namespace WebService.Controllers
         [HttpGet("get-profile")]
         public async Task<IActionResult> GetProfile() {
             try {
-                ProfileDownloadDTO profileDTO = await userServiceProxy.GetUser(tokenExtractor.GetUsernameFromToken(User));
-                return Ok(profileDTO);
+                Result<ProfileDownloadDTO> result = await userServiceProxy.GetUser(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<ProfileDownloadDTO>(ResultMetadata.Exception));
             }
         }
 
@@ -72,21 +78,31 @@ namespace WebService.Controllers
             try {
                 User user = new User(ValueOrNull(profileDTO.Username), ValueOrNull(profileDTO.Email), ValueOrNull(profileDTO.Password), ValueOrNull(profileDTO.FirstName), ValueOrNull(profileDTO.LastName), ValueOrNull(profileDTO.DateOfBirth), ValueOrNull(profileDTO.Address), tokenExtractor.GetRoleFromToken(User));
 
-                byte[] picture;
-
+                byte[] picture = null;
                 if (profileDTO.Picture != null) {
                     using (var memoryStream = new MemoryStream()) {
                         profileDTO.Picture.CopyTo(memoryStream);
                         picture = memoryStream.ToArray();
                     }
-                } else {
-                    picture = null;
-                }
-                
-                string result = await userServiceProxy.Update(tokenExtractor.GetUsernameFromToken(User), user, picture);
+                } 
+
+                Result<string> result = await userServiceProxy.Update(tokenExtractor.GetUsernameFromToken(User), user, picture);
+
                 return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<string>(ResultMetadata.Exception));
+            }
+        }
+
+        [HttpGet("get-registration-request-status-and-blocked")]
+        [Authorize(Roles = "Driver")]
+        public async Task<IActionResult> GetRegistrationRequestStatusAndBlocked() {
+            try {
+                Result<GetStatusAndBlockedDTO> result = await userServiceProxy.GetRegistrationRequestStatusAndBlocked(tokenExtractor.GetUsernameFromToken(User));
+
+                return Ok(result);
+            } catch {
+                return Ok(new Result<GetStatusAndBlockedDTO>(ResultMetadata.Exception));
             }
         }
 

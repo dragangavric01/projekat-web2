@@ -11,14 +11,18 @@ import { clearGlobalState, getToken } from '../../services/globalStateService.js
 import {UserRole} from '../../model/User.js'
 import { useState } from 'react';
 import { setToken, setRole, getRoleFromToken, convertRoleToInt } from '../../services/globalStateService.js';
-import { getCurrentUser, updateProfile } from '../../services/httpService.js';
+import { getCurrentUser, ResultMetadata, updateProfile } from '../../services/httpService.js';
 import Input, { InputType } from '../elements/Input/Input.js';
 import { Common } from './Common.js';
+import { Error } from '../elements/Error/Error.js';
 
 
 export function EditProfile() {
     const navigate = useNavigate()
     var user = useLocation().state;
+
+    const [resultMetadata, setResultMetadata] = useState(null);
+    const [validationText, setValidationText] = useState(null);
 
     const [email, setEmail] = useState(null);
     const [password, setPassword] = useState(null);
@@ -39,32 +43,37 @@ export function EditProfile() {
     const handlePictureChange = (event) => {setPicture(event.target.files[0]); };
 
     async function handleApply() {
-        const profileData = {
-            username: username,
-            email: email,
-            password: password,
-            firstName: firstName,
-            lastName: lastName,
-            dateOfBirth: dateOfBirth,
-            address: address,
-            role: getRoleFromToken(getToken()),    //////////////////////////
-            picture: picture
-        }
+        setValidationText(null);
+        setResultMetadata(null);
 
-        const result = await updateProfile(profileData);
-        
-        if (result == 'error') {
-            // show error
-        } else if (result == 'token expired') {
-            navigate('/log-in');
-        } else if (result == null) {
-            // show error
-        } else if (result != "") {
-            setToken(result);
+        if (email == "" || username == "" || firstName == "" || lastName == "" || address == "" || dateOfBirth == "") {
+            setValidationText("There are empty fields.");
+        } else {
+            const profileData = {
+                username: username,
+                email: email,
+                password: password,
+                firstName: firstName,
+                lastName: lastName,
+                dateOfBirth: dateOfBirth,
+                address: address,
+                role: getRoleFromToken(getToken()),    
+                picture: picture
+            }
+    
+            const result = await updateProfile(profileData);
+    
+            setResultMetadata(result.metadata);
+    
+            if (result.metadata == ResultMetadata.SUCCESS) {
+                if (result.data != null) {
+                    setToken(result.data);
+                    navigate("/dashboard/profile");
+                }
+            }
         }
-
-        navigate("/dashboard/profile");
     }
+
 
     return (
         <Common 
@@ -85,6 +94,7 @@ export function EditProfile() {
 
             bottomComponent={
                 <>
+                    <Error validationText={validationText} resultMetadata={resultMetadata}/>
                     <br/>
                     <HandlerButton text={"Apply changes"} size={ButtonSize.LARGE} handler={handleApply}/>
                 </>

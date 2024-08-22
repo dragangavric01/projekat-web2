@@ -3,6 +3,17 @@ import { useContext } from 'react';
 import { convertRoleToText, useRole, UserContext, getToken } from './globalStateService';
 
 
+export const ResultMetadata = {
+    TOKEN_EXPIRED: -1,
+    SUCCESS: 0,
+    EXCEPTION: 1,
+    USERNAME_CONFLICT: 2,
+    EMAIL_CONFLICT: 3,
+    LOGIN_FAILED: 4,
+    ALREADY_ACCEPTED: 5
+};
+
+
 const axNoToken = axios.create({
     baseURL: process.env.REACT_APP_BACKEND_URL, 
     headers: {
@@ -39,11 +50,11 @@ function getAxiosFormData() {
 
 function getError(error) {
     if (error == undefined) {
-        return 'error';
+        return ResultMetadata.EXCEPTION;
     } else if (error.response.status == 401) {
-        return 'token expired';
+        return ResultMetadata.TOKEN_EXPIRED;
     } else {
-        return 'error';
+        return ResultMetadata.EXCEPTION;
     }
 }
 
@@ -54,7 +65,7 @@ export const logIn = async (logInData) => {
         return response.data;
     } catch (error) {
         console.error('Error: ', error);
-        return 'error';
+        return getError(error);
     }
 };
 
@@ -75,7 +86,7 @@ export const register = async (user) => {
         return response.data;
     } catch (error) {
         console.error('Error: ', error);
-        return 'error';
+        return getError(error);
     }
 };
 
@@ -200,6 +211,16 @@ export const getRides = async () => {
     }
 };
 
+export const getRegistrationRequestStatusAndBlocked = async () => {
+    try {
+        const response = await getAxios().get('/current-user/get-registration-request-status-and-blocked');
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
 export const getDrivers = async () => {
     try {
         const response = await getAxios().get('/users/get-drivers');
@@ -223,6 +244,46 @@ export const getDriver = async (driverUsername) => {
 export const getDriversAverageRating = async (driverUsername) => {
     try {
         const response = await getAxios().post('/rides/get-drivers-average-rating', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const acceptDriversRegistrationRequest = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/users/accept-drivers-registration-request', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const denyDriversRegistrationRequest = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/users/deny-drivers-registration-request', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const blockDriver = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/users/block-driver', driverUsername);
+        return response.data;
+    } catch (error) {
+        console.error('Error: ', error);
+        return getError(error);
+    }
+};
+
+export const unblockDriver = async (driverUsername) => {
+    try {
+        const response = await getAxios().post('/users/unblock-driver', driverUsername);
         return response.data;
     } catch (error) {
         console.error('Error: ', error);

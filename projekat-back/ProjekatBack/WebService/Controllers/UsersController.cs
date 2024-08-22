@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using WebRideCommon.DTO;
 using WebUserCommon.DTO;
+using Common;
 
 namespace WebService.Controllers {
     [Route("users")]
@@ -20,10 +21,11 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetDrivers() {
             try {
-                List<DriverDataDTO> drivers = await userServiceProxy.GetDrivers();
-                return Ok(drivers);
+                Result<List<DriverDataDTO>> result = await userServiceProxy.GetDrivers();
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<List<DriverDataDTO>>(ResultMetadata.Exception));
             }
         }
 
@@ -31,10 +33,59 @@ namespace WebService.Controllers {
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetDriver([FromBody] string driverUsername) {
             try {
-                DriverDTO driver = await userServiceProxy.GetDriver(driverUsername);
-                return Ok(driver);
+                Result<DriverDTO> result = await userServiceProxy.GetDriver(driverUsername);
+
+                return Ok(result);
             } catch {
-                return Problem(statusCode: 500);
+                return Ok(new Result<DriverDTO>(ResultMetadata.Exception));
+            }
+        }
+
+        [HttpPost("accept-drivers-registration-request")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> AcceptDriversRegistrationRequest([FromBody] string driverUsername) {
+            try {
+                ResultMetadata metadata = await userServiceProxy.AcceptDriversRegistrationRequest(driverUsername);
+
+                return Ok(metadata);
+            } catch {
+                return Ok(ResultMetadata.Exception);
+            }
+        }
+
+        [HttpPost("deny-drivers-registration-request")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DenyDriversRegistrationRequest([FromBody] string driverUsername) {
+            try {
+                ResultMetadata metadata = await userServiceProxy.DenyDriversRegistrationRequest(driverUsername);
+
+                return Ok(metadata);
+            } catch {
+                return Ok(ResultMetadata.Exception);
+            }
+        }
+
+        [HttpPost("block-driver")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> BlockDriver([FromBody] string driverUsername) {
+            try {
+                ResultMetadata metadata = await userServiceProxy.BlockDriver(driverUsername);
+
+                return Ok(metadata);
+            } catch {
+                return Ok(ResultMetadata.Exception);
+            }
+        }
+
+        [HttpPost("unblock-driver")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UnblockDriver([FromBody] string driverUsername) {
+            try {
+                ResultMetadata metadata = await userServiceProxy.UnblockDriver(driverUsername);
+
+                return Ok(metadata);
+            } catch {
+                return Ok(ResultMetadata.Exception);
             }
         }
     }
